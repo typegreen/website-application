@@ -1,0 +1,73 @@
+.mainContent {
+  width: 82%;
+  height: 100%;
+  padding: 2rem;
+  overflow: auto;
+  background-color: #fbfcf9;
+}
+
+.detection-logs-container {
+  margin-left: 30px;
+  padding: 20px;
+}
+
+h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #2e7d32;
+  margin-bottom: 10px;
+}
+
+.description {
+  font-size: 14px;
+  color: #6c757d;
+  margin-bottom: 15px;
+}
+
+.logs-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.logs-table th,
+.logs-table td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.logs-table th {
+  background-color: #e8f5e9;
+  font-weight: bold;
+}
+
+.logs-table tr:hover {
+  background-color: #f5f5f5;
+}
+
+.healthy {
+  color: #2e7d32;
+  font-weight: bold;
+}
+
+.infected {
+  color: #d32f2f;
+  font-weight: bold;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 5px;
+}

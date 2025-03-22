@@ -1,0 +1,181 @@
+:root{
+    --hoverColor: hsl(93, 75%, 76%);
+    --paleGreen: hsl(96, 75%, 89%);
+    --whiteColor: hsl(0, 0%, 100%);
+    --blackColor: hsl(0, 0%, 18%);
+    --grayText: hsl(0, 0%, 90%);
+    --bgColor: hsl(113, 11%, 85%);
+    --inputColor: hsl(330, 12%, 97%);
+  
+    --h2FontSize: 1.25rem;
+    --h3FontSize: 1rem;
+    --smallFontSize: .815em;
+
+}
+
+.sideBar {
+    background: var(--whiteColor);
+    box-shadow: 1px 0px 4px var(--greyText);
+    width: 18%;
+    overflow: auto;
+    height: 100%;
+    display: flex;
+    flex-direction: column; 
+    align-items: flex-start;
+    justify-content: flex-start; 
+
+    .logoDiv {
+        padding: 1.2rem 1.5rem 0; 
+        margin-bottom: 0;
+        display: flex;
+        align-items: center; 
+        gap: 0.5rem; 
+
+        img {
+            max-width: 30px;
+            padding: 0.1rem;
+            margin: 0; 
+            border-radius: 2px;
+        }
+
+        h2 {
+            color: green;
+            font-size: var(--h2FontSize);
+            margin: 0; 
+        }
+    }
+
+    .menuDiv {
+        padding-top: 2rem; 
+        margin: 0;
+        width: 100%;
+
+        .divTitle {
+            color: var(--blackColor);
+            padding: 0 1.5rem 1rem;
+            font-size: var(--h3FontSize);
+        }
+
+        .menuLists {
+            .listItem {
+                width: 100%;
+                padding: 0rem 1.5rem;
+                position: relative;
+
+
+                &::before {
+                    content: '';
+                    height: 0%;
+                    width: 5px;
+                    position: absolute;
+                    left: 0;
+                    bottom: 0;
+                    background: green;
+                    border-top-right-radius: 30px;
+                    border-bottom-right-radius: 30px;
+                }
+
+                .menuLink {
+                    color: var(--grayText);
+                    font-weight: 500;
+
+                    .icon {
+                        margin-right: .5rem;
+                    }
+                }
+
+                &:hover .menuLink{
+                    color: green;
+                    transition: 0;
+                }
+
+                &:hover::before{
+                    transform: .3s ease;
+                    height: 100%;
+                }
+            }
+        }
+    }
+
+    .sideBarCard{
+        position: relative;
+        padding: 1rem;
+        width: 100%;
+        text-align: center;
+        display: block;
+        margin-top: auto;
+        
+    
+        .icon{
+            background: var(--hoverColor);
+            position: absolute;
+            font-size: 3rem;
+            border-radius: 50%;
+            border: 10px solid white;
+            top: -8px;
+            right: 50%;
+            z-index: 100;
+            transform: translate(50%);
+        }
+
+        .cardContent{
+            text-align: center;
+            display: block;
+            margin: 0 auto;
+            position: relative;
+            padding: 1rem;
+            background: var(--hoverColor);
+            overflow: hidden;
+            border-radius: 10px;
+
+            h3{
+                margin-top: 0;
+                font-size: 1rem;
+                padding: .5rem;
+                font-weight: 650;
+                margin-bottom: 0;
+            }
+
+            p{
+                margin-top: 0;
+                font-size: .9rem;
+                padding: .9rem;
+                text-align: center;
+            }
+
+            .btn{
+                position: relative;
+                align-items: center;
+                text-align: center;
+                display: block;
+                margin: 0 auto;
+            }
+
+            .circle1, .circle2{
+                position: absolute;
+                background: var(--paleGreen);
+                border-radius: 50%;
+                opacity: .7;
+            }
+
+            .circle1{
+                top: -50px;
+                left: -50px;
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+            }
+
+            
+            .circle2{
+                bottom: -80px;
+                right: -70px;
+                width: 150px;
+                height: 150px;
+                border-radius: 50%;
+            }
+        }
+    }
+
+    
+}
