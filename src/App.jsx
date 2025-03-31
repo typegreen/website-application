@@ -1,4 +1,5 @@
 import React from 'react';
+import { AuthProvider } from './context/AuthContext';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.scss';
 import './App.css';
@@ -12,27 +13,30 @@ import Login from './components/auth/Login';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={<Login />} />
+    <AuthProvider>
+      <Router>
+        <Routes>
+        <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
 
-        <Route 
-          path="/*" 
-          element={
-            <div className="container">
-              <Sidebar />
-                <Routes>
-                  <Route path="/captured-image" element={<CapturedImage />} />
-                  <Route path="/detection-logs" element={<DetectionLogs />} />
-                  <Route path="/report" element={<Report />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/logout" element={<LogOut />} />
-                </Routes>
-              </div>
-          } 
-        />
-      </Routes>
-    </Router>
+          <Route 
+            path="/*" 
+            element={
+              <div className="container">
+                <Sidebar />
+                  <Routes>
+                    <Route path="/captured-image" element={<CapturedImage />} />
+                    <Route path="/detection-logs" element={<DetectionLogs />} />
+                    <Route path="/report" element={<Report />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/logout" element={<LogOut />} />
+                  </Routes>
+                </div>
+            } 
+          />
+        </Routes>
+      </Router>
+      </AuthProvider>
   );
 }
 

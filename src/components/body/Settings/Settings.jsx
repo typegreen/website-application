@@ -1,118 +1,224 @@
 import React, { useState, useEffect } from "react";
 import { FaUserShield, FaUserPlus, FaUserTimes } from "react-icons/fa";
 import { RiLockPasswordFill } from "react-icons/ri";
+import { useAuth } from "../../../context/AuthContext";
 import "./Settings.scss";
 
 const Settings = () => {
-  const [userRole, setUserRole] = useState("user");
-  const [users, setUsers] = useState([
-    { id: 1, name: "John Doe", username: "user_jd", password: "jd-ani", role: "admin" },
-    { id: 2, name: "Jane Smith", username: "user_js", password: "js-ani", role: "user" },
-    { id: 3, name: "Alice Brown", username: "user_ab", password: "ab-ani", role: "user" },
-  ]);
-
-  const [newUserName, setNewUserName] = useState("");
+  const { user, isAdmin } = useAuth();
+  const [users, setUsers] = useState([]);
+  const [newUsername, setNewUsername] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const role = localStorage.getItem("userRole") || "user";
-    setUserRole(role);
-  }, []);
+    if (isAdmin()) {
+      fetchUsers();
+    }
+  }, [isAdmin]);
 
-  // Function to generate username and password
-  const generateCredentials = (fullName) => {
-    const nameParts = fullName.trim().split(" ");
-    if (nameParts.length < 2) return null; // Ensure both first and last name exist
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch('http://localhost/webapp/Thesis/website-backend/getUsers.php', {
+        headers: {
+          'Authorization': `Bearer ${user.id}`
+        }
+      });
 
-    const firstInitial = nameParts[0][0].toLowerCase();
-    const lastInitial = nameParts[nameParts.length - 1][0].toLowerCase();
-    const username = `user_${firstInitial}${lastInitial}`;
-    const password = `${firstInitial}${lastInitial}-ani`;
+      if (!response.ok) {
+        throw new Error(`Server responded with ${response.status}`);
+      }
 
-    return { username, password };
+      const data = await response.json();
+      setUsers(data.map(user => ({
+        id: user.id,
+        username: user.username,
+        password: '••••••••', // Placeholder for password
+        role: user.accessLevel.toLowerCase() // Convert ADMIN -> admin
+      })));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Change User Role
-  const changeUserRole = (id, newRole) => {
-    setUsers(users.map(user => (user.id === id ? { ...user, role: newRole } : user)));
+  const generatePassword = () => {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%&";
+    let password = "";
+    for (let i = 0; i < 10; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return password;
   };
 
-  // Add New User
-  const addUser = () => {
-    if (newUserName.trim() === "") return;
+  const changeUserRole = async (id, newRole) => {
+    try {
+      const response = await fetch('http://localhost/webapp/Thesis/website-backend/updateUser.php', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.id}`
+        },
+        body: JSON.stringify({
+          id,
+          accessLevel: newRole.toUpperCase()
+        })
+      });
 
-    const credentials = generateCredentials(newUserName);
-    if (!credentials) {
-      alert("Please enter both first and last names.");
+      if (!response.ok) {
+        throw new Error('Failed to update role');
+      }
+
+      setUsers(users.map(user => 
+        user.id === id ? { ...user, role: newRole } : user
+      ));
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const addUser = async () => {
+    if (newUsername.trim() === "") {
+      setError("Please enter a username");
       return;
     }
 
-    const newUser = {
-      id: users.length + 1,
-      name: newUserName,
-      username: credentials.username,
-      password: credentials.password,
-      role: "user",
-    };
+    try {
+      const response = await fetch('http://localhost/webapp/Thesis/website-backend/addUser.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.id}`
+        },
+        body: JSON.stringify({
+          username: newUsername,
+          password: generatePassword(),
+          accessLevel: 'USER' // Always set as USER by default
+        })
+      });
 
-    setUsers([...users, newUser]);
-    setNewUserName("");
+      if (!response.ok) {
+        throw new Error('Failed to add user');
+      }
+
+      await fetchUsers();
+      setNewUsername("");
+      setError(null);
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
-  // Delete User
-  const deleteUser = (id) => {
-    setUsers(users.filter(user => user.id !== id));
+  const deleteUser = async (id) => {
+    if (!window.confirm('Are you sure you want to permanently delete this user?')) return;
+    
+    try {
+        const response = await fetch(
+            `http://localhost/webapp/Thesis/website-backend/deleteUser.php?id=${id}`, 
+            {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${user.id}`
+                }
+            }
+        );
+
+        const result = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(result.error || 'Failed to delete user');
+        }
+
+        // Only update UI after successful backend deletion
+        setUsers(prevUsers => prevUsers.filter(user => user.id !== id));
+        
+        // Optional: Show success message
+        setError(`User ${id} deleted successfully`);
+        setTimeout(() => setError(null), 3000);
+
+    } catch (err) {
+        setError(err.message);
+        console.error("Delete error:", err);
+        
+        // Refresh the list to ensure consistency with database
+        fetchUsers();
+    }
   };
+
+  const resetPassword = (id) => {
+    alert("Password reset functionality to be implemented");
+  };
+
+  if (!isAdmin()) {
+    return (
+      <div className="mainContent">
+        <h1>Settings</h1>
+        <p>You don't have permission to access this page.</p>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="mainContent">
+        <h1>Settings</h1>
+        <p>Loading user data...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="mainContent">
       <h1>Settings</h1>
 
-      {userRole === "admin" && (
-        <>
-          {/* User Management */}
-          <div className="settingsContainer">
-            <h2><FaUserShield /> User Management</h2>
-            <p>Modify user roles, reset passwords, add, or remove users.</p>
+      {error && (
+        <div className="error-message">
+          {error}
+        </div>
+      )}
 
-            {/* Add User Section */}
-            <div className="addUser">
-              <input
-                type="text"
-                placeholder="Enter full name (e.g., Diane Quitalig)"
-                value={newUserName}
-                onChange={(e) => setNewUserName(e.target.value)}
-              />
-              <button className="addBtn" onClick={addUser}>
-                <FaUserPlus /> Add User
+      <div className="settingsContainer">
+        <h2><FaUserShield /> User Management</h2>
+        <p>Modify user roles, reset passwords, add, or remove users.</p>
+
+        <div className="addUser">
+          <input
+            type="text"
+            placeholder="Enter username"
+            value={newUsername}
+            onChange={(e) => setNewUsername(e.target.value)}
+          />
+          <button className="addBtn" onClick={addUser}>
+            <FaUserPlus /> Add User
+          </button>
+        </div>
+
+        <div className="userList">
+          {users.map(user => (
+            <div key={user.id} className="userItem">
+              <span>{user.username} - {user.role}</span>
+              <div>
+                <p><strong>Username:</strong> {user.username}</p>
+                <p><strong>Password:</strong> {user.password}</p>
+              </div>
+              <select
+                value={user.role}
+                onChange={(e) => changeUserRole(user.id, e.target.value)}
+              >
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+              </select>
+              <button className="resetBtn" onClick={() => resetPassword(user.id)}>
+                <RiLockPasswordFill /> Reset Password
+              </button>
+              <button className="deleteBtn" onClick={() => deleteUser(user.id)}>
+                <FaUserTimes /> Delete
               </button>
             </div>
-
-            {/* User List */}
-            <div className="userList">
-              {users.map(user => (
-                <div key={user.id} className="userItem">
-                  <span>{user.name} - {user.role}</span>
-                  <div>
-                    <p><strong>Username:</strong> {user.username}</p>
-                    <p><strong>Password:</strong> {user.password}</p>
-                  </div>
-                  <select
-                    value={user.role}
-                    onChange={(e) => changeUserRole(user.id, e.target.value)}
-                  >
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                  <button className="resetBtn"><RiLockPasswordFill /> Reset Password</button>
-                  <button className="deleteBtn" onClick={() => deleteUser(user.id)}>
-                    <FaUserTimes /> Delete
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </>
-      )}
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

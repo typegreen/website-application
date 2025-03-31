@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext'; // Import the auth context
 import './Login.scss';
 import '../../App.scss';
 import sideimage from '../../assets/Login/sideimage.png';
@@ -9,25 +10,33 @@ import { BsFillShieldLockFill } from "react-icons/bs";
 import { AiOutlineSwapRight } from "react-icons/ai";
 
 const Login = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
+  const { login } = useAuth(); // Get login function from context
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const handleLogin = (e) => {
-    e.preventDefault(); 
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError(''); // Clear previous errors
 
-    // Demo credentials
-    const adminUser = { username: "admin", password: "admin123", role: "admin" };
-    const normalUser = { username: "user", password: "user123", role: "user" };
+    // Basic validation
+    if (!username || !password) {
+      setError('Please enter both username and password');
+      return;
+    }
 
-    if (username === adminUser.username && password === adminUser.password) {
-      localStorage.setItem("userRole", adminUser.role);
-      navigate('/captured-image');
-    } else if (username === normalUser.username && password === normalUser.password) {
-      localStorage.setItem("userRole", normalUser.role);
-      navigate('/captured-image');
-    } else {
-      alert("Invalid credentials!");
+    try {
+      const result = await login(username, password);
+      
+      if (result.success) {
+        navigate('/captured-image');
+      } else {
+        setError(result.message || 'Invalid credentials');
+      }
+    } catch (err) {
+      setError('Failed to connect to server');
+      console.error('Login error:', err);
     }
   };
 
@@ -46,10 +55,10 @@ const Login = () => {
           <div className="headerDiv">
             <img src={logo} alt="AniMonitor Logo"/>
             <h3>Maligayang Pagbabalik!</h3>
-            <p>Secure access starts here. Please log in using the credentials provided by the system admin.</p>
+            <p>Secure access starts here. Please log in using your credentials.</p>
           </div>
 
-          <form className="form grid">
+          <form className="form grid" onSubmit={handleLogin}>
             <div className='inputDiv'>
               <label htmlFor="username"></label>
               <div className='input flex'>
@@ -60,6 +69,7 @@ const Login = () => {
                   placeholder='Username'
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
+                  required
                 />
               </div>
             </div>
@@ -74,11 +84,18 @@ const Login = () => {
                   placeholder='Password'
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  required
                 />
               </div>
             </div>
             
-            <button type='button' className='btn flex' onClick={handleLogin}>
+            {error && (
+              <div className="error-message">
+                {error}
+              </div>
+            )}
+            
+            <button type='submit' className='btn flex'>
               <span>Login</span>
               <AiOutlineSwapRight className='icon'/>
             </button>

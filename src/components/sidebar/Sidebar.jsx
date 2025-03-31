@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext'; // Import useAuth
 import './Sidebar.scss';
 import anilogo from '../../assets/anilogo.png';
 import { MdLogout } from "react-icons/md";
@@ -10,12 +11,7 @@ import { IoIosSettings } from "react-icons/io";
 import { BsQuestionCircle } from "react-icons/bs";
 
 const Sidebar = () => {
-  const [userRole, setUserRole] = useState(null);
-
-  useEffect(() => {
-    const role = localStorage.getItem("userRole") || "user"; // Default to "user" if not set
-    setUserRole(role);
-  }, []);
+  const { user, isAdmin } = useAuth(); // Get user and isAdmin from AuthContext
 
   return (
     <div className='sideBar grid'>
@@ -49,8 +45,8 @@ const Sidebar = () => {
             </NavLink>
           </li>
 
-          {/* Only show "Settings" if user is an admin */}
-          {userRole === "admin" && (
+          {/* Updated admin check - uses isAdmin() from AuthContext */}
+          {isAdmin() && (
             <li className='listItem'>
               <NavLink to="/settings" className='menuLink flex' activeClassName="active">
                 <IoIosSettings className='icon' />
