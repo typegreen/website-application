@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import './Report.scss';
+import React, { useState, useEffect } from "react";
+import "./Report.scss";
 
 function Report() {
-  const [data, setData] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [logs, setLogs] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [filtered, setFiltered] = useState([]);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_BASE}/getLogs.php`, {
@@ -13,42 +14,51 @@ function Report() {
         Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_API_KEY}`,
       },
     })
-      .then(res => res.json())
-      .then(res => {
-        if (Array.isArray(res)) {
-          setData(res);
-        }
+      .then((res) => res.json())
+      .then((res) => {
+        const data = Array.isArray(res) ? res : res.response || [];
+        setLogs(data);
+        setFiltered(data);
       });
   }, []);
 
   const handleSearch = () => {
-    const match = data.find(
+    const result = logs.find(
       (log) =>
-        log.user_id?.toString() === searchTerm ||
-        log.img?.toLowerCase().includes(searchTerm.toLowerCase())
+        log.user_id.toString() === searchTerm ||
+        (log.image_code && log.image_code.toLowerCase().includes(searchTerm.toLowerCase()))
     );
-    setFiltered(match ? [match] : []);
+    if (result) {
+      setFiltered([result]);
+      setError("");
+    } else {
+      setFiltered([]);
+      setError("No match found.");
+    }
   };
 
   return (
-    <div className="report">
-      <h2>Report</h2>
-      <input
-        type="text"
-        placeholder="Enter User ID or image name"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-      <button onClick={handleSearch}>Search</button>
-
-      {filtered.map((log, idx) => (
-        <div className="report-card" key={idx}>
-          <p><strong>User:</strong> {log.user_id}</p>
+    <div className="mainContent">
+      <h2 className="sectionTitle">Report</h2>
+      <div className="searchBar">
+        <input
+          type="text"
+          placeholder="Enter User ID or image name"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <button onClick={handleSearch}>Search</button>
+      </div>
+      {error && <p className="errorMessage">{error}</p>}
+      {filtered.map((log, index) => (
+        <div key={index} className="reportCard">
+          <h4>Image ID: {log.image_code}</h4>
+          <p><strong>User ID:</strong> {log.user_id}</p>
           <p><strong>Classification:</strong> {log.classification}</p>
-          <img src={`${process.env.REACT_APP_API_BASE}${log.img}`} alt="capture" width="100" />
           <p><strong>Location:</strong> {log.location}</p>
-          <p><strong>Date:</strong> {log.date}</p>
-          <p><strong>Time:</strong> {log.time}</p>
+          <p><strong>Date:</strong> {log.date_of_detection}</p>
+          <p><strong>Time:</strong> {log.time_of_detection}</p>
+          <img src={log.rice_crop_image} alt="crop" width="250" />
         </div>
       ))}
     </div>
