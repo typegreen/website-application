@@ -36,7 +36,7 @@ const DetectionLog = () => {
       }
     
       try {
-        const apiUrl = 'http://localhost/webapp/Thesis/website-backend/getLogs.php';
+        const apiUrl = '${process.env.REACT_APP_API_BASE}/getLogs.php';
         console.log('Fetching logs for user:', user.id); // Debug logging
         
         const response = await fetch(apiUrl, {
@@ -130,7 +130,7 @@ const DetectionLog = () => {
                 <td>{log.location}</td>
                 <td className="image-path-cell">
                   <a 
-                    href={`http://localhost/webapp/Thesis/website-backend${log.img}`}
+                    href={`${process.env.REACT_APP_API_BASE}${log.img}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="image-link"

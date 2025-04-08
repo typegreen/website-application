@@ -18,25 +18,31 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(''); // Clear previous errors
+    setError("");
 
-    // Basic validation
     if (!username || !password) {
-      setError('Please enter both username and password');
+      setError("Please enter both username and password");
       return;
     }
 
     try {
-      const result = await login(username, password);
-      
-      if (result.success) {
-        navigate('/report');
+      const response = await fetch(`${process.env.REACT_APP_API_BASE}/login.php`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_name: username, password: password })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.response?.login === "success") {
+        login(data.response.user); // Store user in context
+        navigate("/report");
       } else {
-        setError(result.message || 'Invalid credentials');
+        setError("Invalid credentials");
       }
     } catch (err) {
-      setError('Failed to connect to server');
-      console.error('Login error:', err);
+      setError("Server error. Try again later.");
+      console.error("Login failed:", err);
     }
   };
 

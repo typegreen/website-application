@@ -19,12 +19,12 @@ const Settings = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('http://localhost/webapp/Thesis/website-backend/getUsers.php', {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE}/getUsers.php`, {
         headers: {
           'Authorization': `Bearer ${user.id}`
         }
       });
-
+      
       if (!response.ok) {
         throw new Error(`Server responded with ${response.status}`);
       }
@@ -54,17 +54,15 @@ const Settings = () => {
 
   const changeUserRole = async (id, newRole) => {
     try {
-      const response = await fetch('http://localhost/webapp/Thesis/website-backend/updateUser.php', {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE}/updateUser.php`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${user.id}`
         },
-        body: JSON.stringify({
-          id,
-          accessLevel: newRole.toUpperCase()
-        })
+        body: JSON.stringify({ id, accessLevel: newRole.toUpperCase() })
       });
+      
 
       if (!response.ok) {
         throw new Error('Failed to update role');
@@ -85,18 +83,15 @@ const Settings = () => {
     }
 
     try {
-      const response = await fetch('http://localhost/webapp/Thesis/website-backend/addUser.php', {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE}/addUser.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${user.id}`
         },
-        body: JSON.stringify({
-          username: newUsername,
-          password: generatePassword(),
-          accessLevel: 'USER' // Always set as USER by default
-        })
+        body: JSON.stringify({ username: newUsername, password: generatePassword(), accessLevel: 'USER' })
       });
+      
 
       if (!response.ok) {
         throw new Error('Failed to add user');
@@ -114,15 +109,13 @@ const Settings = () => {
     if (!window.confirm('Are you sure you want to permanently delete this user?')) return;
     
     try {
-        const response = await fetch(
-            `http://localhost/webapp/Thesis/website-backend/deleteUser.php?id=${id}`, 
-            {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${user.id}`
-                }
-            }
-        );
+      const response = await fetch(`${process.env.REACT_APP_API_BASE}/deleteUser.php?id=${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${user.id}`
+        }
+      });
+      
 
         const result = await response.json();
         
