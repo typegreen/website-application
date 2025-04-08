@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import '../styles/DetectionLog.scss';
+import './DetectionLog.scss';
 
 const DetectionLog = () => {
     const [logs, setLogs] = useState([]);
