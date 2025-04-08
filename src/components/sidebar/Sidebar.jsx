@@ -24,19 +24,21 @@ const Sidebar = () => {
         <h3 className="divTitle">CONTROL PANEL</h3>
         <ul className='menuLists grid'>
 
-          <li className='listItem'>
+          {!isAdmin && <li className='listItem'>
             <NavLink to="/captured-image" className='menuLink flex' activeClassName="active">
               <IoImages className='icon' />
               <span className='smallText'>Capture Image</span>
             </NavLink>
           </li>
+          }
 
-          <li className='listItem'>
+          {!isAdmin() && <li className='listItem'>
             <NavLink to="/detection-logs" className='menuLink flex' activeClassName="active">
               <RxActivityLog className='icon' />
               <span className='smallText'>Detection Logs</span>
             </NavLink>
           </li>
+          }
 
           <li className='listItem'>
             <NavLink to="/report" className='menuLink flex' activeClassName="active">

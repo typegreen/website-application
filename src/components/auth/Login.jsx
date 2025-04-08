@@ -30,7 +30,7 @@ const Login = () => {
       const result = await login(username, password);
       
       if (result.success) {
-        navigate('/captured-image');
+        navigate('/report');
       } else {
         setError(result.message || 'Invalid credentials');
       }
