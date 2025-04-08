@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "./DetectionLogs.scss";
+import "./DetectionLog.scss";
 
 function DetectionLogs() {
   const [logs, setLogs] = useState([]);
