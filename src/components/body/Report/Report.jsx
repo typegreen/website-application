@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import "./Report.scss";
 
@@ -20,7 +21,11 @@ const Report = () => {
   }, []);
 
   const handleSearch = () => {
-    const foundReport = reports.find(r => r.user_id === searchId || r.img === searchId);
+    const foundReport = reports.find(
+      (r) =>
+        r.user_id?.toString() === searchId ||
+        r.img?.toLowerCase().includes(searchId.toLowerCase())
+    );
     if (foundReport) {
       setSelectedReport(foundReport);
       setError("");
@@ -42,11 +47,18 @@ const Report = () => {
         />
         <button onClick={handleSearch}>Search</button>
       </div>
+
       {error && <p className="error">{error}</p>}
+
       {selectedReport && (
         <div className="report-details">
-          <img src={`${process.env.REACT_APP_API_BASE}${selectedReport.img}`} alt="Detected Condition" />
-          <p><strong>Classification:</strong> {selectedReport.classification}</p>
+          {selectedReport.img && (
+            <img
+              src={`${process.env.REACT_APP_API_BASE}${selectedReport.img}`}
+              alt="Detected Condition"
+            />
+          )}
+          <p><strong>Classification:</strong> {selectedReport.classification || "N/A"}</p>
           <p><strong>Location:</strong> {selectedReport.location || "N/A"}</p>
           <p><strong>Date:</strong> {selectedReport.date || "Unknown"}</p>
           <p><strong>Time:</strong> {selectedReport.time || "Unknown"}</p>
