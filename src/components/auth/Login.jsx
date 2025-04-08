@@ -35,7 +35,13 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok && data.response?.login === "success") {
-        login(data.response.user); // Store user in context
+        const { user_id, username, access_level } = data.response;
+      
+        // Store in localStorage
+        localStorage.setItem("user_id", user_id);
+        localStorage.setItem("username", username);
+        localStorage.setItem("access_level", access_level);
+      
         navigate("/report");
       } else {
         setError("Invalid credentials");
