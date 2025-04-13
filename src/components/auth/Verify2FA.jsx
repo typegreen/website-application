@@ -1,47 +1,51 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Login.scss'; // Reuse login styles
 import '../../App.scss';
+import './Login.scss';
 import sideimage from '../../assets/Login/sideimage.png';
 import logo from '../../assets/Login/logo.png';
+import { FaKey } from "react-icons/fa";
+import { AiOutlineSwapRight } from "react-icons/ai";
 
 const Verify2FA = () => {
+  const navigate = useNavigate();
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate();
+
+  const email = localStorage.getItem('2fa_email');
+  const user_id = localStorage.getItem('2fa_user_id');
 
   const handleVerify = async (e) => {
     e.preventDefault();
-    const user_id = localStorage.getItem("2fa_user_id");
-
-    if (!user_id) {
-      setError("User session expired. Please log in again.");
+    if (!code) {
+      setError('Please enter your verification code.');
       return;
     }
 
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_BASE}/verify2FA.php`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch(`${process.env.REACT_APP_API_BASE}/verify2fa.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id, code })
       });
 
-      const data = await res.json();
-      if (res.ok && data.status === "success") {
-        // Store permanent login state
-        localStorage.setItem("user_id", data.response.user_id);
-        localStorage.setItem("username", data.response.username);
-        localStorage.setItem("access_level", data.response.access_level);
-        localStorage.removeItem("2fa_user_id");
-        localStorage.removeItem("2fa_email");
+      const data = await response.json();
 
-        navigate("/report");
+      if (response.ok && data.response?.status === 'verified') {
+        // ✅ Store user_id and access_level
+        localStorage.setItem('user_id', user_id);
+        localStorage.setItem('access_level', data.response.access_level);
+        localStorage.removeItem('2fa_user_id');
+        localStorage.removeItem('2fa_email');
+
+        // ✅ Redirect to report page
+        navigate('/report');
       } else {
-        setError(data.response || "Invalid verification code.");
+        setError('Invalid or expired code.');
       }
     } catch (err) {
-      console.error("Verification error:", err);
-      setError("Something went wrong. Please try again.");
+      setError('Verification failed.');
+      console.error(err);
     }
   };
 
@@ -49,29 +53,29 @@ const Verify2FA = () => {
     <div className='loginPage flex'>
       <div className='container flex'>
         <div className='sideImage'>
-          <img src={sideimage} alt="Side Design" />
+          <img src={sideimage} alt="Side" />
           <div className="textDiv">
-            <h2 className='titleStyle'>Two-Factor Authentication</h2>
-            <p className='paraStyle'>Secure your account with a verification code.</p>
+            <h2 className='titleStyle'>Verify your code</h2>
+            <p className='paraStyle'>Two-Factor Authentication</p>
           </div>
         </div>
 
         <div className="formDiv flex">
           <div className="headerDiv">
-            <img src={logo} alt="AniMonitor Logo" />
-            <h3>Enter 6-digit Code</h3>
-            <p>Please check your email for the verification code.</p>
+            <img src={logo} alt="AniMonitor Logo"/>
+            <h3>Email Verification</h3>
+            <p>We've sent a 6-digit code to: <b>{email}</b></p>
           </div>
 
           <form className="form grid" onSubmit={handleVerify}>
             <div className='inputDiv'>
               <label htmlFor="code"></label>
               <div className='input flex'>
-                <input
-                  type='text'
-                  id='code'
+                <FaKey className='icon'/>
+                <input 
+                  type='text' 
+                  id='code' 
                   placeholder='Enter 6-digit code'
-                  maxLength={6}
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
                   required
@@ -79,14 +83,11 @@ const Verify2FA = () => {
               </div>
             </div>
 
-            {error && (
-              <div className="error-message">
-                {error}
-              </div>
-            )}
+            {error && <div className="error-message">{error}</div>}
 
             <button type='submit' className='btn flex'>
               <span>Verify</span>
+              <AiOutlineSwapRight className='icon'/>
             </button>
           </form>
         </div>
