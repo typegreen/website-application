@@ -1,6 +1,5 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext'; // Import useAuth
 import './Sidebar.scss';
 import anilogo from '../../assets/anilogo.png';
 import { MdLogout } from "react-icons/md";
@@ -11,7 +10,9 @@ import { IoIosSettings } from "react-icons/io";
 import { BsQuestionCircle } from "react-icons/bs";
 
 const Sidebar = () => {
-  const { user, isAdmin } = useAuth(); // Get user and isAdmin from AuthContext
+  const accessLevel = localStorage.getItem("access_level");
+
+  const isAdmin = () => accessLevel === "ADMIN";
 
   return (
     <div className='sideBar grid'>
@@ -24,33 +25,34 @@ const Sidebar = () => {
         <h3 className="divTitle">CONTROL PANEL</h3>
         <ul className='menuLists grid'>
 
-          {!isAdmin && <li className='listItem'>
-            <NavLink to="/captured-image" className='menuLink flex' activeClassName="active">
-              <IoImages className='icon' />
-              <span className='smallText'>Capture Image</span>
-            </NavLink>
-          </li>
-          }
+          {!isAdmin() && (
+            <li className='listItem'>
+              <NavLink to="/captured-image" className='menuLink flex'>
+                <IoImages className='icon' />
+                <span className='smallText'>Capture Image</span>
+              </NavLink>
+            </li>
+          )}
 
-          {!isAdmin() && <li className='listItem'>
-            <NavLink to="/detection-logs" className='menuLink flex' activeClassName="active">
-              <RxActivityLog className='icon' />
-              <span className='smallText'>Detection Logs</span>
-            </NavLink>
-          </li>
-          }
+          {!isAdmin() && (
+            <li className='listItem'>
+              <NavLink to="/detection-logs" className='menuLink flex'>
+                <RxActivityLog className='icon' />
+                <span className='smallText'>Detection Logs</span>
+              </NavLink>
+            </li>
+          )}
 
           <li className='listItem'>
-            <NavLink to="/report" className='menuLink flex' activeClassName="active">
+            <NavLink to="/report" className='menuLink flex'>
               <TbReportSearch className='icon' />
               <span className='smallText'>Report</span>
             </NavLink>
           </li>
 
-          {/* Updated admin check - uses isAdmin() from AuthContext */}
           {isAdmin() && (
             <li className='listItem'>
-              <NavLink to="/settings" className='menuLink flex' activeClassName="active">
+              <NavLink to="/settings" className='menuLink flex'>
                 <IoIosSettings className='icon' />
                 <span className='smallText'>Settings</span>
               </NavLink>
@@ -58,7 +60,7 @@ const Sidebar = () => {
           )}
 
           <li className='listItem'>
-            <NavLink to="/login" className='menuLink flex' activeClassName="active">
+            <NavLink to="/login" className='menuLink flex'>
               <MdLogout className='icon' />
               <span className='smallText'>Log Out</span>
             </NavLink>
