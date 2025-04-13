@@ -26,22 +26,17 @@ const Verify2FA = () => {
 
       const data = await res.json();
       if (res.ok && data.status === "success") {
-        // ✅ Store logged-in user
         localStorage.setItem("user_id", data.response.user_id);
         localStorage.setItem("username", data.response.username);
         localStorage.setItem("access_level", data.response.access_level);
-        
-        // 🔐 Clean up temporary 2FA storage
         localStorage.removeItem("2fa_user_id");
         localStorage.removeItem("2fa_email");
-
         navigate("/report");
       } else {
-        setError(data.response || "Invalid code. Please try again.");
+        setError(data.response || "Invalid code.");
       }
     } catch (err) {
-      setError("Something went wrong. Try again later.");
-      console.error(err);
+      setError("Something went wrong.");
     }
   };
 
@@ -49,14 +44,13 @@ const Verify2FA = () => {
     <div className="verify2fa-page">
       <div className="verify-box">
         <h2>Verify 2FA</h2>
-        <p>Please enter the 6-digit code sent to your email.</p>
+        <p>Enter the 6-digit code sent to your email.</p>
         <form onSubmit={handleVerify}>
           <input
             type="text"
-            placeholder="Enter code"
             value={code}
             onChange={(e) => setCode(e.target.value)}
-            required
+            placeholder="Enter code"
             maxLength={6}
           />
           <button type="submit">Verify</button>
