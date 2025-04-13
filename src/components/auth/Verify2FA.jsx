@@ -1,51 +1,46 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../../App.scss';
-import './Login.scss';
-import sideimage from '../../assets/Login/sideimage.png';
+import './Login.scss'; // reuse the same SCSS
 import logo from '../../assets/Login/logo.png';
-import { FaKey } from "react-icons/fa";
-import { AiOutlineSwapRight } from "react-icons/ai";
+import { AiOutlineArrowRight } from "react-icons/ai";
+import { FaKey } from 'react-icons/fa';
 
 const Verify2FA = () => {
   const navigate = useNavigate();
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
 
-  const email = localStorage.getItem('2fa_email');
   const user_id = localStorage.getItem('2fa_user_id');
+  const email = localStorage.getItem('2fa_email');
 
-  const handleVerify = async (e) => {
-    e.preventDefault();
-    if (!code) {
-      setError('Please enter your verification code.');
-      return;
-    }
-
+  const handleVerify = async () => {
     try {
       const response = await fetch(`${process.env.REACT_APP_API_BASE}/verify2fa.php`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id, code })
       });
 
       const data = await response.json();
 
-      if (response.ok && data.response?.status === 'verified') {
-        // ✅ Store user_id and access_level
-        localStorage.setItem('user_id', user_id);
-        localStorage.setItem('access_level', data.response.access_level);
-        localStorage.removeItem('2fa_user_id');
-        localStorage.removeItem('2fa_email');
+      if (response.ok && data.response.login === "success") {
+        // Store user info
+        localStorage.setItem("user_id", data.response.user_id);
+        localStorage.setItem("username", data.response.username);
+        localStorage.setItem("access_level", data.response.access_level);
 
-        // ✅ Redirect to report page
-        navigate('/report');
+        // Clean up
+        localStorage.removeItem("2fa_user_id");
+        localStorage.removeItem("2fa_email");
+
+        // Redirect
+        navigate("/report");
       } else {
-        setError('Invalid or expired code.');
+        setError(data.response || "Verification failed.");
       }
     } catch (err) {
-      setError('Verification failed.');
-      console.error(err);
+      console.error("Verification error:", err);
+      setError("Server error. Try again later.");
     }
   };
 
@@ -53,43 +48,38 @@ const Verify2FA = () => {
     <div className='loginPage flex'>
       <div className='container flex'>
         <div className='sideImage'>
-          <img src={sideimage} alt="Side" />
-          <div className="textDiv">
-            <h2 className='titleStyle'>Verify your code</h2>
-            <p className='paraStyle'>Two-Factor Authentication</p>
-          </div>
+          <h2 className='titleStyle'>Verify<br />your code</h2>
+          <p className='paraStyle'>Two-Factor Authentication</p>
         </div>
 
         <div className="formDiv flex">
           <div className="headerDiv">
             <img src={logo} alt="AniMonitor Logo"/>
             <h3>Email Verification</h3>
-            <p>We've sent a 6-digit code to: <b>{email}</b></p>
+            <p>We've sent a 6-digit code to:<br /><strong>{email}</strong></p>
           </div>
 
-          <form className="form grid" onSubmit={handleVerify}>
-            <div className='inputDiv'>
-              <label htmlFor="code"></label>
-              <div className='input flex'>
-                <FaKey className='icon'/>
-                <input 
-                  type='text' 
-                  id='code' 
+          <div className="form grid">
+            <div className="inputDiv">
+              <div className="input flex">
+                <FaKey className='icon' />
+                <input
+                  type='text'
                   placeholder='Enter 6-digit code'
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
-                  required
+                  maxLength="6"
                 />
               </div>
             </div>
 
             {error && <div className="error-message">{error}</div>}
 
-            <button type='submit' className='btn flex'>
+            <button onClick={handleVerify} className='btn flex'>
               <span>Verify</span>
-              <AiOutlineSwapRight className='icon'/>
+              <AiOutlineArrowRight className='icon'/>
             </button>
-          </form>
+          </div>
         </div>
       </div>
     </div>
