@@ -8,7 +8,15 @@ function Report() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_BASE}/getLogs.php`, {
+    const userId = localStorage.getItem("user_id");
+    const accessLevel = localStorage.getItem("access_level");
+
+    const endpoint =
+      accessLevel === "ADMIN"
+        ? `${process.env.REACT_APP_API_BASE}/getLogs.php`
+        : `${process.env.REACT_APP_API_BASE}/getLogs.php?user_id=${userId}`;
+
+    fetch(endpoint, {
       headers: {
         apikey: process.env.REACT_APP_SUPABASE_API_KEY,
         Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_API_KEY}`,
@@ -26,7 +34,8 @@ function Report() {
     const result = logs.find(
       (log) =>
         log.user_id.toString() === searchTerm ||
-        (log.image_code && log.image_code.toLowerCase().includes(searchTerm.toLowerCase()))
+        (log.image_code &&
+          log.image_code.toLowerCase().includes(searchTerm.toLowerCase()))
     );
     if (result) {
       setFiltered([result]);

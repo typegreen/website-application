@@ -1,43 +1,41 @@
 import React, { useState, useEffect } from "react";
 import { FaUserShield, FaUserPlus, FaUserTimes } from "react-icons/fa";
 import { RiLockPasswordFill } from "react-icons/ri";
-import { useAuth } from "../../../context/AuthContext";
 import "./Settings.scss";
 
 const Settings = () => {
-  const { user, isAdmin } = useAuth();
+  const accessLevel = localStorage.getItem("access_level");
+  const userId = localStorage.getItem("user_id");
+
   const [users, setUsers] = useState([]);
   const [newUsername, setNewUsername] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const isAdmin = () => accessLevel === "ADMIN";
+
   useEffect(() => {
     if (isAdmin()) {
       fetchUsers();
     }
-  }, [isAdmin]);
+  }, []);
 
   const fetchUsers = async () => {
     try {
       const response = await fetch(`${process.env.REACT_APP_API_BASE}/getUsers.php`, {
         headers: {
-          'Authorization': `Bearer ${user.id}`
+          'Authorization': `Bearer ${userId}`
         }
       });
-      
-      if (!response.ok) {
-        throw new Error(`Server responded with ${response.status}`);
-      }
-
       const data = await response.json();
       setUsers(data.map(user => ({
         id: user.id,
         username: user.username,
-        password: '••••••••', // Placeholder for password
-        role: user.accessLevel.toLowerCase() // Convert ADMIN -> admin
+        password: '••••••••',
+        role: user.accessLevel.toLowerCase()
       })));
     } catch (err) {
-      setError(err.message);
+      setError("Failed to fetch users.");
     } finally {
       setLoading(false);
     }
@@ -45,102 +43,72 @@ const Settings = () => {
 
   const generatePassword = () => {
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%&";
-    let password = "";
-    for (let i = 0; i < 10; i++) {
-      password += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return password;
+    return Array.from({ length: 10 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
   };
 
   const changeUserRole = async (id, newRole) => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_BASE}/updateUser.php`, {
+      await fetch(`${process.env.REACT_APP_API_BASE}/updateUser.php`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.id}`
+          'Authorization': `Bearer ${userId}`
         },
         body: JSON.stringify({ id, accessLevel: newRole.toUpperCase() })
       });
-      
-
-      if (!response.ok) {
-        throw new Error('Failed to update role');
-      }
-
-      setUsers(users.map(user => 
-        user.id === id ? { ...user, role: newRole } : user
-      ));
+      setUsers(users.map(user => user.id === id ? { ...user, role: newRole } : user));
     } catch (err) {
-      setError(err.message);
+      setError("Failed to update role.");
     }
   };
 
   const addUser = async () => {
-    if (newUsername.trim() === "") {
-      setError("Please enter a username");
+    if (!newUsername.trim()) {
+      setError("Username required.");
       return;
     }
-
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_BASE}/addUser.php`, {
+      await fetch(`${process.env.REACT_APP_API_BASE}/addUser.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.id}`
+          'Authorization': `Bearer ${userId}`
         },
-        body: JSON.stringify({ username: newUsername, password: generatePassword(), accessLevel: 'USER' })
+        body: JSON.stringify({
+          username: newUsername,
+          password: generatePassword(),
+          accessLevel: 'USER'
+        })
       });
-      
-
-      if (!response.ok) {
-        throw new Error('Failed to add user');
-      }
-
       await fetchUsers();
       setNewUsername("");
-      setError(null);
     } catch (err) {
-      setError(err.message);
+      setError("Failed to add user.");
     }
   };
 
   const deleteUser = async (id) => {
-    if (!window.confirm('Are you sure you want to permanently delete this user?')) return;
-    
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
       const response = await fetch(`${process.env.REACT_APP_API_BASE}/deleteUser.php?id=${id}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${user.id}`
+          'Authorization': `Bearer ${userId}`
         }
       });
-      
-
-        const result = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(result.error || 'Failed to delete user');
-        }
-
-        // Only update UI after successful backend deletion
-        setUsers(prevUsers => prevUsers.filter(user => user.id !== id));
-        
-        // Optional: Show success message
-        setError(`User ${id} deleted successfully`);
-        setTimeout(() => setError(null), 3000);
-
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error);
+      setUsers(users.filter(user => user.id !== id));
+      setError(`Deleted user ${id}`);
+      setTimeout(() => setError(null), 3000);
     } catch (err) {
-        setError(err.message);
-        console.error("Delete error:", err);
-        
-        // Refresh the list to ensure consistency with database
-        fetchUsers();
+      setError("Failed to delete user.");
+      fetchUsers(); // Refresh if error
     }
   };
 
   const resetPassword = (id) => {
-    alert("Password reset functionality to be implemented");
+    alert("Password reset functionality to be implemented.");
   };
 
   if (!isAdmin()) {
@@ -164,17 +132,10 @@ const Settings = () => {
   return (
     <div className="mainContent">
       <h1>Settings</h1>
-
-      {error && (
-        <div className="error-message">
-          {error}
-        </div>
-      )}
+      {error && <div className="error-message">{error}</div>}
 
       <div className="settingsContainer">
         <h2><FaUserShield /> User Management</h2>
-        <p>Modify user roles, reset passwords, add, or remove users.</p>
-
         <div className="addUser">
           <input
             type="text"

@@ -27,15 +27,6 @@ const Sidebar = () => {
 
           {!isAdmin() && (
             <li className='listItem'>
-              <NavLink to="/captured-image" className='menuLink flex'>
-                <IoImages className='icon' />
-                <span className='smallText'>Capture Image</span>
-              </NavLink>
-            </li>
-          )}
-
-          {!isAdmin() && (
-            <li className='listItem'>
               <NavLink to="/detection-logs" className='menuLink flex'>
                 <RxActivityLog className='icon' />
                 <span className='smallText'>Detection Logs</span>
