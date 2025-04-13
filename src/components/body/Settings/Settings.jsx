@@ -4,175 +4,154 @@ import { RiLockPasswordFill } from "react-icons/ri";
 import "./Settings.scss";
 
 const Settings = () => {
-  const accessLevel = localStorage.getItem("access_level");
-  const userId = localStorage.getItem("user_id");
-
   const [users, setUsers] = useState([]);
   const [newUsername, setNewUsername] = useState("");
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const isAdmin = () => accessLevel === "ADMIN";
-
-  useEffect(() => {
-    if (isAdmin()) {
-      fetchUsers();
-    }
-  }, []);
+  const [loading, setLoading] = useState(true);
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_BASE}/getUsers.php`, {
-        headers: {
-          'Authorization': `Bearer ${userId}`
-        }
-      });
-      const data = await response.json();
+      const res = await fetch(`${process.env.REACT_APP_API_BASE}/getUsers.php`);
+      const data = await res.json();
       setUsers(data.map(user => ({
-        id: user.id,
-        username: user.username,
-        password: '••••••••',
-        role: user.accessLevel.toLowerCase()
+        id: user.user_id,
+        username: user.user_name,
+        role: user.access_level.toLowerCase()
       })));
     } catch (err) {
-      setError("Failed to fetch users.");
+      setError("Failed to fetch users");
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
   const generatePassword = () => {
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%&";
-    return Array.from({ length: 10 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
-  };
-
-  const changeUserRole = async (id, newRole) => {
-    try {
-      await fetch(`${process.env.REACT_APP_API_BASE}/updateUser.php`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${userId}`
-        },
-        body: JSON.stringify({ id, accessLevel: newRole.toUpperCase() })
-      });
-      setUsers(users.map(user => user.id === id ? { ...user, role: newRole } : user));
-    } catch (err) {
-      setError("Failed to update role.");
+    let password = "";
+    for (let i = 0; i < 10; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
     }
+    return password;
   };
 
   const addUser = async () => {
     if (!newUsername.trim()) {
-      setError("Username required.");
+      setError("Please enter a username");
       return;
     }
+
+    const newUser = {
+      username: newUsername,
+      password: generatePassword(),
+      accessLevel: "USER"
+    };
+
     try {
-      await fetch(`${process.env.REACT_APP_API_BASE}/addUser.php`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${userId}`
-        },
-        body: JSON.stringify({
-          username: newUsername,
-          password: generatePassword(),
-          accessLevel: 'USER'
-        })
+      const res = await fetch(`${process.env.REACT_APP_API_BASE}/addUser.php`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newUser)
       });
-      await fetchUsers();
+
+      if (!res.ok) throw new Error("Failed to add user");
+
       setNewUsername("");
+      fetchUsers(); // Refresh user list
     } catch (err) {
-      setError("Failed to add user.");
+      setError(err.message);
+    }
+  };
+
+  const changeUserRole = async (id, newRole) => {
+    try {
+      const res = await fetch(`${process.env.REACT_APP_API_BASE}/updateUser.php`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, accessLevel: newRole })
+      });
+
+      if (!res.ok) throw new Error("Failed to update role");
+
+      setUsers(users.map(user =>
+        user.id === id ? { ...user, role: newRole } : user
+      ));
+    } catch (err) {
+      setError(err.message);
     }
   };
 
   const deleteUser = async (id) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
+
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_BASE}/deleteUser.php?id=${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${userId}`
-        }
+      const res = await fetch(`${process.env.REACT_APP_API_BASE}/deleteUser.php?id=${id}`, {
+        method: "DELETE"
       });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error);
-      setUsers(users.filter(user => user.id !== id));
-      setError(`Deleted user ${id}`);
-      setTimeout(() => setError(null), 3000);
+
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || "Failed to delete user");
+
+      setUsers(prev => prev.filter(user => user.id !== id));
     } catch (err) {
-      setError("Failed to delete user.");
-      fetchUsers(); // Refresh if error
+      setError(err.message);
     }
   };
 
   const resetPassword = (id) => {
-    alert("Password reset functionality to be implemented.");
+    alert("Password reset functionality coming soon.");
   };
-
-  if (!isAdmin()) {
-    return (
-      <div className="mainContent">
-        <h1>Settings</h1>
-        <p>You don't have permission to access this page.</p>
-      </div>
-    );
-  }
-
-  if (loading) {
-    return (
-      <div className="mainContent">
-        <h1>Settings</h1>
-        <p>Loading user data...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="mainContent">
       <h1>Settings</h1>
+
       {error && <div className="error-message">{error}</div>}
 
-      <div className="settingsContainer">
-        <h2><FaUserShield /> User Management</h2>
-        <div className="addUser">
-          <input
-            type="text"
-            placeholder="Enter username"
-            value={newUsername}
-            onChange={(e) => setNewUsername(e.target.value)}
-          />
-          <button className="addBtn" onClick={addUser}>
-            <FaUserPlus /> Add User
-          </button>
-        </div>
+      {loading ? (
+        <p>Loading user data...</p>
+      ) : (
+        <div className="settingsContainer">
+          <h2><FaUserShield /> User Management</h2>
+          <p>Modify user roles, reset passwords, or add/remove users.</p>
 
-        <div className="userList">
-          {users.map(user => (
-            <div key={user.id} className="userItem">
-              <span>{user.username} - {user.role}</span>
-              <div>
-                <p><strong>Username:</strong> {user.username}</p>
-                <p><strong>Password:</strong> {user.password}</p>
+          <div className="addUser">
+            <input
+              type="text"
+              placeholder="Enter username"
+              value={newUsername}
+              onChange={(e) => setNewUsername(e.target.value)}
+            />
+            <button className="addBtn" onClick={addUser}>
+              <FaUserPlus /> Add User
+            </button>
+          </div>
+
+          <div className="userList">
+            {users.map(user => (
+              <div key={user.id} className="userItem">
+                <span>{user.username} - {user.role}</span>
+                <select
+                  value={user.role}
+                  onChange={(e) => changeUserRole(user.id, e.target.value)}
+                >
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
+                </select>
+                <button className="resetBtn" onClick={() => resetPassword(user.id)}>
+                  <RiLockPasswordFill /> Reset Password
+                </button>
+                <button className="deleteBtn" onClick={() => deleteUser(user.id)}>
+                  <FaUserTimes /> Delete
+                </button>
               </div>
-              <select
-                value={user.role}
-                onChange={(e) => changeUserRole(user.id, e.target.value)}
-              >
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-              </select>
-              <button className="resetBtn" onClick={() => resetPassword(user.id)}>
-                <RiLockPasswordFill /> Reset Password
-              </button>
-              <button className="deleteBtn" onClick={() => deleteUser(user.id)}>
-                <FaUserTimes /> Delete
-              </button>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
