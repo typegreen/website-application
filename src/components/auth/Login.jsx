@@ -35,10 +35,31 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok && data.response?.login === "pending_2fa") {
-        localStorage.setItem("2fa_user_id", data.response.user_id);
-        localStorage.setItem("2fa_email", data.response.email);
+        const user_id = data.response.user_id;
+        const email = data.response.email;
+      
+        // Save temporarily for use in Verify2FA.jsx
+        localStorage.setItem("2fa_user_id", user_id);
+        localStorage.setItem("2fa_email", email);
+      
+        // ✅ Trigger 2FA email
+        const emailRes = await fetch(`${process.env.REACT_APP_API_BASE}/email2FA.php`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id, email })
+        });
+      
+        const emailData = await emailRes.json();
+        if (!emailRes.ok) {
+          console.error("2FA Email failed:", emailData);
+          setError("Failed to send 2FA code. Please try again.");
+          return;
+        }
+      
+        // Redirect to 2FA input screen
         navigate("/verify-2fa");
       }
+      
        else {
         setError("Invalid credentials");
       }
