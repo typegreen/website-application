@@ -1,69 +1,85 @@
-
 import React, { useEffect, useState } from 'react';
 import './DetectionLog.scss';
 
 const DetectionLog = () => {
-    const [logs, setLogs] = useState([]);
+  const [logs, setLogs] = useState([]);
+  const [error, setError] = useState("");
 
-    useEffect(() => {
-        const userId = localStorage.getItem('user_id');
-        if (!userId) {
-            console.error("User ID not found in localStorage");
-            return;
+  useEffect(() => {
+    const userId = localStorage.getItem('user_id');
+    if (!userId) {
+      console.error("User ID not found in localStorage");
+      setError("User not found. Please log in again.");
+      return;
+    }
+
+    const fetchLogs = async () => {
+      try {
+        const response = await fetch(
+          `https://oyicdamiuhqlwqckxjpe.supabase.co/rest/v1/detection_logs?user_id=eq.${userId}`,
+          {
+            headers: {
+              apikey: process.env.REACT_APP_SUPABASE_API_KEY,
+              Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_API_KEY}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch detection logs");
         }
 
-        const fetchLogs = async () => {
-            try {
-                const response = await fetch(`https://oyicdamiuhqlwqckxjpe.supabase.co/rest/v1/detection_logs?user_id=eq.${userId}`, {
-                    headers: {
-                        apikey: process.env.REACT_APP_SUPABASE_API_KEY,
-                        Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_API_KEY}`
-                    }
-                });
+        const data = await response.json();
+        setLogs(data);
+      } catch (error) {
+        console.error("Error loading logs:", error);
+        setError("Failed to load detection logs.");
+      }
+    };
 
-                if (!response.ok) {
-                    throw new Error("Failed to fetch detection logs");
-                }
+    fetchLogs();
+  }, []);
 
-                const data = await response.json();
-                setLogs(data);
-            } catch (error) {
-                console.error("Error loading logs:", error);
-            }
-        };
+  return (
+    <div className="mainContent">
+      <div className="header flex">
+        <h2 className="sectionTitle">Detection Logs</h2>
+      </div>
 
-        fetchLogs();
-    }, []);
+      {error && <div className="errorMessage">{error}</div>}
 
-    return (
-        <div className="detection-log">
-            <h2>Detection Logs</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>User ID</th>
-                        <th>Classification</th>
-                        <th>Image</th>
-                        <th>Location</th>
-                        <th>Date</th>
-                        <th>Time</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {logs.map((log) => (
-                        <tr key={log.log_id}>
-                            <td>{log.user_id}</td>
-                            <td>{log.classification}</td>
-                            <td><img src={log.rice_crop_image} alt="crop" width="100" /></td>
-                            <td>{log.location}</td>
-                            <td>{log.date_of_detection}</td>
-                            <td>{log.time_of_detection}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
-    );
+      <div className="tableContainer">
+        <table className="logs-table">
+          <thead>
+            <tr>
+              <th>User ID</th>
+              <th>Classification</th>
+              <th>Image</th>
+              <th>Location</th>
+              <th>Date</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {logs.map((log) => (
+              <tr key={log.log_id}>
+                <td>{log.user_id}</td>
+                <td className={log.classification.toLowerCase()}>{log.classification}</td>
+                <td>
+                  <div className="image-hover">
+                    <img src={log.rice_crop_image} alt="crop" className="log-image" />
+                  </div>
+                </td>
+                <td>{log.location}</td>
+                <td>{log.date_of_detection}</td>
+                <td>{log.time_of_detection}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
 };
 
 export default DetectionLog;
