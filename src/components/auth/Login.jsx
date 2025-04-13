@@ -34,16 +34,12 @@ const Login = () => {
 
       const data = await response.json();
 
-      if (response.ok && data.response?.login === "success") {
-        const { user_id, username, access_level } = data.response;
-      
-        // Store in localStorage
-        localStorage.setItem("user_id", user_id);
-        localStorage.setItem("username", username);
-        localStorage.setItem("access_level", access_level);
-      
-        navigate("/report");
-      } else {
+      if (response.ok && data.response?.login === "pending_2fa") {
+        localStorage.setItem("2fa_user_id", data.response.user_id);
+        localStorage.setItem("2fa_email", data.response.email);
+        navigate("/verify-2fa");
+      }
+       else {
         setError("Invalid credentials");
       }
     } catch (err) {
