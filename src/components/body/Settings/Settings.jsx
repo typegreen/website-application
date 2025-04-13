@@ -13,13 +13,15 @@ const Settings = () => {
     try {
       const res = await fetch(`${process.env.REACT_APP_API_BASE}/getUsers.php`);
       const data = await res.json();
+
       setUsers(data.map(user => ({
         id: user.user_id,
         username: user.user_name,
-        role: user.access_level.toLowerCase()
+        role: user.access_level.toLowerCase(),
+        passwordLength: user.password ? user.password.length : 10 // fallback
       })));
     } catch (err) {
-      setError("Failed to fetch users");
+      setError("Failed to fetch users.");
     } finally {
       setLoading(false);
     }
@@ -60,7 +62,7 @@ const Settings = () => {
       if (!res.ok) throw new Error("Failed to add user");
 
       setNewUsername("");
-      fetchUsers(); // Refresh user list
+      fetchUsers();
     } catch (err) {
       setError(err.message);
     }
@@ -116,7 +118,7 @@ const Settings = () => {
       ) : (
         <div className="settingsContainer">
           <h2><FaUserShield /> User Management</h2>
-          <p>Modify user roles, reset passwords, or add/remove users.</p>
+          <p>Modify user roles, reset passwords, add, or remove users.</p>
 
           <div className="addUser">
             <input
@@ -133,7 +135,11 @@ const Settings = () => {
           <div className="userList">
             {users.map(user => (
               <div key={user.id} className="userItem">
-                <span>{user.username} - {user.role}</span>
+                <div>
+                  <p><strong>Username:</strong> {user.username}</p>
+                  <p><strong>Password:</strong> {"•".repeat(user.passwordLength)}</p>
+                  <p><strong>Role:</strong> {user.role}</p>
+                </div>
                 <select
                   value={user.role}
                   onChange={(e) => changeUserRole(user.id, e.target.value)}
