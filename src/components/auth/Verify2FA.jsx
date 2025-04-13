@@ -15,7 +15,7 @@ const Verify2FA = () => {
 
   const handleVerify = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_BASE}/verify2fa.php`, {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE}/verify2FA.php`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id, code })
