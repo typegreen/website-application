@@ -37,7 +37,7 @@ const Login = () => {
       if (response.ok && data.response?.login === "pending_2fa") {
         localStorage.setItem("2fa_user_id", data.response.user_id);
         localStorage.setItem("2fa_email", data.response.email);
-        navigate("/verify-2fa");
+        navigate("/Verify2FA");
       }
        else {
         setError("Invalid credentials");
