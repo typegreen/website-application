@@ -10,6 +10,7 @@ import Report from './components/body/Report/Report';
 import Settings from './components/body/Settings/Settings';
 import LogOut from './components/body/LogOut/LogOut';
 import Login from './components/auth/Login';
+import Verify2FA from './components/auth/Verify2FA';
 
 function App() {
   return (
