@@ -19,6 +19,7 @@ function App() {
         <Routes>
         <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/verify-2fa" element={<Verify2FA />} />
 
           <Route 
             path="/*" 
@@ -31,7 +32,6 @@ function App() {
                     <Route path="/report" element={<Report />} />
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/logout" element={<LogOut />} />
-                    <Route path="/verify-2fa" element={<Verify2FA />} />
                   </Routes>
                 </div>
             } 
