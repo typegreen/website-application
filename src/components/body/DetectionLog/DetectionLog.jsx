@@ -66,9 +66,19 @@ const DetectionLog = () => {
                 <td>{log.user_id}</td>
                 <td className={log.classification.toLowerCase()}>{log.classification}</td>
                 <td>
-                  <div className="image-hover">
-                    <img src={log.rice_crop_image} alt="crop" className="log-image" />
-                  </div>
+                  <a 
+                    href={log.rice_crop_image} 
+                    download 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    <img 
+                      src={log.rice_crop_image} 
+                      alt="crop" 
+                      className="log-image" 
+                      style={{ width: "100px", height: "auto", cursor: "pointer" }}
+                    />
+                  </a>
                 </td>
                 <td>{log.location}</td>
                 <td>{log.date_of_detection}</td>
