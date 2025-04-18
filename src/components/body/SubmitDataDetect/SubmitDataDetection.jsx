@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import "./SubmitDataDetection.scss"; // Reuse the existing style
-import axios from "axios";
 
 const SubmitDetection = () => {
   const [form, setForm] = useState({
@@ -23,50 +22,63 @@ const SubmitDetection = () => {
   };
 
   const handleSubmit = async () => {
+    if (!form.location || !form.date || !form.time || !form.imageCode || !form.image) {
+      setError("All fields are required.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+
     try {
-      if (!form.location || !form.date || !form.time || !form.imageCode || !form.image) {
-        setError("All fields are required.");
-        return;
-      }
-
-      setIsSubmitting(true);
-      setError(null);
-
-      // 1. Predict using Flask ML backend
+      // 1. Predict using Flask backend
       const formData = new FormData();
       formData.append("image", form.image);
 
-      const predictionRes = await axios.post(
-        `${process.env.REACT_APP_FLASK_API}/predict`,
-        formData
-      );
-      const predictedClass = predictionRes.data.class;
+      const predictionRes = await fetch(`${process.env.REACT_APP_FLASK_API}/predict`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!predictionRes.ok) throw new Error("Prediction failed.");
+      const predictionData = await predictionRes.json();
+      const predictedClass = predictionData.class;
       setClassification(predictedClass);
 
-      // 2. Upload image to Supabase (use your upload logic here)
+      // 2. Upload image to Supabase
       const imageUpload = new FormData();
       imageUpload.append("file", form.image);
 
-      const imageRes = await axios.post(
-        `${process.env.REACT_APP_API_BASE}/uploadToSupabase.php`,
-        imageUpload
-      );
-
-      const imageUrl = imageRes.data.url;
-
-      // 3. Save full detection log to Supabase DB
-      const userId = localStorage.getItem("user_id");
-      await axios.post(`${process.env.REACT_APP_API_BASE}/insertDetectionLog.php`, {
-        location: form.location,
-        date: form.date,
-        time: form.time,
-        image_code: form.imageCode,
-        rice_crop_image: imageUrl,
-        classification: predictedClass,
-        user_id: userId,
+      const uploadRes = await fetch(`${process.env.REACT_APP_API_BASE}/uploadToSupabase.php`, {
+        method: "POST",
+        body: imageUpload,
       });
 
+      if (!uploadRes.ok) throw new Error("Image upload failed.");
+      const uploadData = await uploadRes.json();
+      const imageUrl = uploadData.url;
+
+      // 3. Insert detection log into database
+      const userId = localStorage.getItem("user_id");
+
+      const insertRes = await fetch(`${process.env.REACT_APP_API_BASE}/insertDetectionLog.php`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          location: form.location,
+          date: form.date,
+          time: form.time,
+          image_code: form.imageCode,
+          rice_crop_image: imageUrl,
+          classification: predictedClass,
+          user_id: userId,
+        }),
+      });
+
+      if (!insertRes.ok) throw new Error("Failed to insert detection log.");
       alert("Detection submitted successfully!");
+
+      // Reset form
       setForm({ location: "", date: "", time: "", imageCode: "", image: null });
       setClassification("");
     } catch (err) {
@@ -90,8 +102,8 @@ const SubmitDetection = () => {
         <div className="addUser">
           <input
             type="text"
-            placeholder="Location"
             name="location"
+            placeholder="Location"
             value={form.location}
             onChange={handleChange}
           />
@@ -109,15 +121,15 @@ const SubmitDetection = () => {
           />
           <input
             type="text"
-            placeholder="Image Code (e.g., IMG001)"
             name="imageCode"
+            placeholder="Image Code (e.g., IMG001)"
             value={form.imageCode}
             onChange={handleChange}
           />
           <input
             type="file"
-            accept="image/*"
             name="image"
+            accept="image/*"
             onChange={handleChange}
           />
           <button className="addBtn" onClick={handleSubmit} disabled={isSubmitting}>
