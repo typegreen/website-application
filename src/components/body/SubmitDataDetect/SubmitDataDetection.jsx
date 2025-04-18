@@ -63,7 +63,7 @@ const SubmitDetection = () => {
       const imageUpload = new FormData();
       imageUpload.append("file", form.image);
 
-      const uploadRes = await fetch(`${process.env.REACT_APP_API_BASE}/uploadToSupabase.php`, {
+      const uploadRes = await fetch(`${process.env.REACT_APP_API_BASE}/uplaodImage.php`, {
         method: "POST",
         body: imageUpload,
       });
@@ -75,7 +75,7 @@ const SubmitDetection = () => {
       // 2. Insert detection log
       const userId = localStorage.getItem("user_id");
 
-      const insertRes = await fetch(`${process.env.REACT_APP_API_BASE}/insertDetectionLog.php`, {
+      const insertRes = await fetch(`${process.env.REACT_APP_API_BASE}/insertLog.php`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
