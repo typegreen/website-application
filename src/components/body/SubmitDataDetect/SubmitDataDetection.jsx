@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./SubmitDataDetection.scss"; // Reuse the existing style
+import "./SubmitDataDetection.scss"; // Reuse Settings.scss styles
 
 const SubmitDetection = () => {
   const [form, setForm] = useState({
@@ -12,13 +12,16 @@ const SubmitDetection = () => {
   const [error, setError] = useState(null);
   const [classification, setClassification] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
+    const file = files ? files[0] : null;
     setForm((prev) => ({
       ...prev,
-      [name]: files ? files[0] : value,
+      [name]: file || value,
     }));
+    if (file) setImagePreview(URL.createObjectURL(file));
   };
 
   const handleSubmit = async () => {
@@ -81,6 +84,7 @@ const SubmitDetection = () => {
       // Reset form
       setForm({ location: "", date: "", time: "", imageCode: "", image: null });
       setClassification("");
+      setImagePreview(null);
     } catch (err) {
       console.error(err);
       setError("Something went wrong during submission.");
@@ -92,7 +96,6 @@ const SubmitDetection = () => {
   return (
     <div className="mainContent">
       <h1>Submit Detection</h1>
-
       {error && <div className="error-message">{error}</div>}
 
       <div className="settingsContainer">
@@ -132,10 +135,18 @@ const SubmitDetection = () => {
             accept="image/*"
             onChange={handleChange}
           />
+
           <button className="addBtn" onClick={handleSubmit} disabled={isSubmitting}>
             {isSubmitting ? "Submitting..." : "Submit Detection"}
           </button>
         </div>
+
+        {imagePreview && (
+          <div style={{ marginTop: "1rem" }}>
+            <strong>Preview:</strong>
+            <img src={imagePreview} alt="preview" style={{ maxWidth: "200px", marginTop: "0.5rem" }} />
+          </div>
+        )}
 
         {classification && (
           <div style={{ marginTop: "1rem" }}>
