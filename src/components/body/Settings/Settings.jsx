@@ -6,6 +6,7 @@ import "./Settings.scss";
 const Settings = () => {
   const [users, setUsers] = useState([]);
   const [newUsername, setNewUsername] = useState("");
+  const [newEmail, setNewEmail] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -17,8 +18,9 @@ const Settings = () => {
       setUsers(data.map(user => ({
         id: user.user_id,
         username: user.user_name,
+        email: user.email,
         role: user.access_level.toLowerCase(),
-        passwordLength: user.password ? user.password.length : 10 // fallback
+        passwordLength: user.password ? user.password.length : 10
       })));
     } catch (err) {
       setError("Failed to fetch users.");
@@ -41,15 +43,16 @@ const Settings = () => {
   };
 
   const addUser = async () => {
-    if (!newUsername.trim()) {
-      setError("Please enter a username");
+    if (!newUsername.trim() || !newEmail.trim()) {
+      setError("Please enter both a username and an email.");
       return;
     }
 
     const newUser = {
       username: newUsername,
       password: generatePassword(),
-      accessLevel: "USER"
+      accessLevel: "USER",
+      email: newEmail
     };
 
     try {
@@ -62,6 +65,7 @@ const Settings = () => {
       if (!res.ok) throw new Error("Failed to add user");
 
       setNewUsername("");
+      setNewEmail("");
       fetchUsers();
     } catch (err) {
       setError(err.message);
@@ -127,6 +131,12 @@ const Settings = () => {
               value={newUsername}
               onChange={(e) => setNewUsername(e.target.value)}
             />
+            <input
+              type="email"
+              placeholder="Enter email"
+              value={newEmail}
+              onChange={(e) => setNewEmail(e.target.value)}
+            />
             <button className="addBtn" onClick={addUser}>
               <FaUserPlus /> Add User
             </button>
@@ -137,6 +147,7 @@ const Settings = () => {
               <div key={user.id} className="userItem">
                 <div>
                   <p><strong>Username:</strong> {user.username}</p>
+                  <p><strong>Email:</strong> {user.email}</p>
                   <p><strong>Password:</strong> {"•".repeat(user.passwordLength)}</p>
                   <p><strong>Role:</strong> {user.role}</p>
                 </div>
