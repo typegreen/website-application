@@ -81,7 +81,7 @@ const SubmitDetection = () => {
         body: JSON.stringify({
           location: form.location,
           date: form.date,
-          time: form.time,
+          time: form.time.length === 5 ? form.time + ":00" : form.time,
           image_code: form.imageCode,
           rice_crop_image: imageUrl,
           classification: classification,
