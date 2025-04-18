@@ -34,6 +34,15 @@ const Sidebar = () => {
             </li>
           )}
 
+          {!isAdmin() && (
+            <li className='listItem'>
+              <NavLink to="/submit-data" className='menuLink flex'>
+                <RxActivityLog className='icon' />
+                <span className='smallText'>Upload Data</span>
+              </NavLink>
+            </li>
+          )}
+
           <li className='listItem'>
             <NavLink to="/report" className='menuLink flex'>
               <TbReportSearch className='icon' />

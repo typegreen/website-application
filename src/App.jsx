@@ -11,6 +11,7 @@ import Settings from './components/body/Settings/Settings';
 import LogOut from './components/body/LogOut/LogOut';
 import Login from './components/auth/Login';
 import Verify2FA from './components/auth/Verify2FA';
+import SubmitDataDetect from './components/body/SubmitDataDetect/SubmitDataDetection';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
                   <Routes>
                     <Route path="/captured-image" element={<CapturedImage />} />
                     <Route path="/detection-logs" element={<DetectionLogs />} />
+                    <Route path="/submit-data" element={<SubmitDataDetect />} />
                     <Route path="/report" element={<Report />} />
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/logout" element={<LogOut />} />
