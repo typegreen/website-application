@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./SubmitDataDetection.scss"; // Reuse Settings.scss styles
+import "./SubmitDataDetection.scss";
 
 const SubmitDetection = () => {
   const [form, setForm] = useState({
@@ -9,19 +9,44 @@ const SubmitDetection = () => {
     imageCode: "",
     image: null,
   });
+
   const [error, setError] = useState(null);
   const [classification, setClassification] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleChange = (e) => {
+  const handleChange = async (e) => {
     const { name, value, files } = e.target;
-    const file = files ? files[0] : null;
-    setForm((prev) => ({
-      ...prev,
-      [name]: file || value,
-    }));
-    if (file) setImagePreview(URL.createObjectURL(file));
+
+    // Handle image upload and prediction
+    if (name === "image" && files.length > 0) {
+      const file = files[0];
+      setForm((prev) => ({ ...prev, image: file }));
+      setImagePreview(URL.createObjectURL(file));
+      await handlePrediction(file); // Run prediction on select
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handlePrediction = async (imageFile) => {
+    try {
+      const formData = new FormData();
+      formData.append("image", imageFile);
+
+      const predictionRes = await fetch(`${process.env.REACT_APP_FLASK_API}/predict`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!predictionRes.ok) throw new Error("Prediction failed.");
+
+      const predictionData = await predictionRes.json();
+      setClassification(predictionData.class);
+    } catch (err) {
+      console.error(err);
+      setClassification("Prediction failed");
+    }
   };
 
   const handleSubmit = async () => {
@@ -34,21 +59,7 @@ const SubmitDetection = () => {
     setError(null);
 
     try {
-      // 1. Predict using Flask backend
-      const formData = new FormData();
-      formData.append("image", form.image);
-
-      const predictionRes = await fetch(`${process.env.REACT_APP_FLASK_API}/predict`, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!predictionRes.ok) throw new Error("Prediction failed.");
-      const predictionData = await predictionRes.json();
-      const predictedClass = predictionData.class;
-      setClassification(predictedClass);
-
-      // 2. Upload image to Supabase
+      // 1. Upload image to Supabase
       const imageUpload = new FormData();
       imageUpload.append("file", form.image);
 
@@ -61,7 +72,7 @@ const SubmitDetection = () => {
       const uploadData = await uploadRes.json();
       const imageUrl = uploadData.url;
 
-      // 3. Insert detection log into database
+      // 2. Insert detection log
       const userId = localStorage.getItem("user_id");
 
       const insertRes = await fetch(`${process.env.REACT_APP_API_BASE}/insertDetectionLog.php`, {
@@ -73,7 +84,7 @@ const SubmitDetection = () => {
           time: form.time,
           image_code: form.imageCode,
           rice_crop_image: imageUrl,
-          classification: predictedClass,
+          classification: classification,
           user_id: userId,
         }),
       });
@@ -96,11 +107,12 @@ const SubmitDetection = () => {
   return (
     <div className="mainContent">
       <h1>Submit Detection</h1>
+
       {error && <div className="error-message">{error}</div>}
 
       <div className="settingsContainer">
         <h2>Detection Information</h2>
-        <p>Fill out the form below and upload your image for classification.</p>
+        <p>Upload your image and enter detection details below.</p>
 
         <div className="addUser">
           <input
@@ -136,23 +148,26 @@ const SubmitDetection = () => {
             onChange={handleChange}
           />
 
+          {imagePreview && (
+            <div style={{ marginTop: "1rem" }}>
+              <img
+                src={imagePreview}
+                alt="Preview"
+                style={{ width: "200px", borderRadius: "8px" }}
+              />
+            </div>
+          )}
+
+          {classification && (
+            <div style={{ marginTop: "1rem" }}>
+              <strong>Predicted Class:</strong> {classification}
+            </div>
+          )}
+
           <button className="addBtn" onClick={handleSubmit} disabled={isSubmitting}>
             {isSubmitting ? "Submitting..." : "Submit Detection"}
           </button>
         </div>
-
-        {imagePreview && (
-          <div style={{ marginTop: "1rem" }}>
-            <strong>Preview:</strong>
-            <img src={imagePreview} alt="preview" style={{ maxWidth: "200px", marginTop: "0.5rem" }} />
-          </div>
-        )}
-
-        {classification && (
-          <div style={{ marginTop: "1rem" }}>
-            <strong>Predicted Class:</strong> {classification}
-          </div>
-        )}
       </div>
     </div>
   );
