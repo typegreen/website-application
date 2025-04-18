@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./Settings.scss"; // Reuse the existing style
+import "./SubmitDataDetection.scss"; // Reuse the existing style
 import axios from "axios";
 
 const SubmitDetection = () => {
