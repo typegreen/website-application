@@ -8,85 +8,87 @@
   --grayText: hsl(0, 0%, 65%);
   --bgColor: hsl(113, 11%, 85%);
   --inputColor: hsl(330, 12%, 97%);
+  --green: #2e7d32;
+  --lightGreen: #a5d6a7;
 }
 
 * {
-  box-sizing: border-box;
-  padding: 0;
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
   font-family: 'Poppins', sans-serif;
 }
 
 .flex {
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .grid {
   display: grid;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .loginPage {
+  width: 100vw;
   height: 100vh;
-  width: 100%;
-  background-color: var(--bgColor);
+  background: #f7f9f6;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
 
   .container {
-    width: 60%;
-    min-height: 75vh;
-    background-color: #fefefe;
-    border-radius: 10px;
+    width: 90%;
+    max-width: 700px;
+    height: auto;
     display: flex;
-    justify-content: space-between;
+    border-radius: 14px;
     overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    background: white;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    flex-direction: row;
 
-    @media screen and (max-width: 1024px) {
+    @media screen and (max-width: 768px) {
       flex-direction: column;
-      width: 90%;
     }
   }
 
   .sideImage {
-    width: 50%;
-    background: linear-gradient(135deg, #2e7d32, #a5d6a7);
-    color: white;
+    width: 40%;
+    background: linear-gradient(to bottom, #2e7d32, #81c784);
+    padding: 2rem 1.5rem;
     display: flex;
-    justify-content: center;
-    align-items: center;
     flex-direction: column;
+    justify-content: center;
     text-align: center;
-    padding: 2rem;
 
     .titleStyle {
-      font-size: 36px;
-      font-weight: 800;
-      margin-bottom: 1rem;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--whiteColor);
+      line-height: 2.5rem;
     }
 
     .paraStyle {
-      font-size: 16px;
+      font-size: 0.9rem;
+      color: var(--whiteColor);
+      margin-top: 0.5rem;
     }
 
-    @media screen and (max-width: 1024px) {
+    @media screen and (max-width: 768px) {
       width: 100%;
-      height: 200px;
     }
   }
 
   .formDiv {
-    width: 50%;
+    width: 60%;
     padding: 2rem;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
 
-    @media screen and (max-width: 1024px) {
+    @media screen and (max-width: 768px) {
       width: 100%;
     }
   }
@@ -95,52 +97,54 @@
     text-align: center;
 
     img {
-      width: 80px;
+      width: 65px;
     }
 
     h3 {
       margin-top: 1rem;
-      font-size: 22px;
+      font-size: 1.25rem;
       color: var(--blackColor);
     }
 
     p {
-      font-size: 14px;
-      color: var(--blackColor);
       margin-top: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--blackColor);
 
       strong {
-        color: green;
+        color: #2e7d32;
       }
     }
   }
 
   .form {
-    margin-top: 2rem;
-    width: 75%;
+    margin-top: 1.5rem;
+    width: 100%;
     max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .inputDiv {
     .input {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 1rem;
-      background-color: var(--inputColor);
+      background: var(--inputColor);
+      border-radius: 8px;
       border: 1px solid var(--grayText);
-      border-radius: 10px;
+      padding: 0.75rem 1rem;
 
       .icon {
-        color: black;
+        color: var(--blackColor);
         font-size: 1.2rem;
+        margin-right: 0.5rem;
       }
 
       input {
-        background: none;
-        outline: none;
         border: none;
-        width: 100%;
+        outline: none;
+        background: transparent;
+        flex: 1;
         font-size: 1rem;
       }
     }
@@ -149,22 +153,20 @@
   .btn {
     margin-top: 1rem;
     width: 100%;
-    padding: 0.8rem;
-    background: green;
+    background: #2e7d32;
     color: white;
-    font-size: 16px;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
+    padding: 0.75rem;
+    font-size: 1rem;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    cursor: pointer;
-    transition: 0.3s ease;
+    transition: all 0.3s ease;
 
     .icon {
       font-size: 20px;
-      transition: 0.3s ease;
     }
 
     &:hover {
@@ -172,18 +174,19 @@
       color: var(--blackColor);
 
       .icon {
-        transform: translateX(4px);
         color: var(--blackColor);
+        transform: translateX(4px);
       }
     }
   }
 
   .error-message {
-    color: white;
     background: red;
+    color: white;
     padding: 0.5rem 1rem;
-    border-radius: 5px;
+    border-radius: 6px;
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
   }
 }
