@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./SubmitDataDetection.scss";
 
 const SubmitDetection = () => {
   const [form, setForm] = useState({
+    province: "",
     city: "",
     barangay: "",
     date: "",
@@ -11,10 +12,45 @@ const SubmitDetection = () => {
     image: null,
   });
 
+  const [provinces, setProvinces] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [barangays, setBarangays] = useState([]);
+
   const [error, setError] = useState(null);
   const [classification, setClassification] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    fetch("https://psgc.cloud/api/provinces")
+      .then((res) => res.json())
+      .then((data) => setProvinces(data))
+      .catch((err) => console.error("Error fetching provinces", err));
+  }, []);
+
+  useEffect(() => {
+    if (form.province) {
+      fetch(`https://psgc.cloud/api/provinces/${form.province}/cities-municipalities`)
+        .then((res) => res.json())
+        .then((data) => setCities(data))
+        .catch((err) => console.error("Error fetching cities", err));
+    } else {
+      setCities([]);
+      setForm((prev) => ({ ...prev, city: "", barangay: "" }));
+    }
+  }, [form.province]);
+
+  useEffect(() => {
+    if (form.city) {
+      fetch(`https://psgc.cloud/api/cities-municipalities/${form.city}/barangays`)
+        .then((res) => res.json())
+        .then((data) => setBarangays(data))
+        .catch((err) => console.error("Error fetching barangays", err));
+    } else {
+      setBarangays([]);
+      setForm((prev) => ({ ...prev, barangay: "" }));
+    }
+  }, [form.city]);
 
   const handleChange = async (e) => {
     const { name, value, files } = e.target;
@@ -49,7 +85,7 @@ const SubmitDetection = () => {
   };
 
   const handleSubmit = async () => {
-    if (!form.city || !form.barangay || !form.date || !form.time || !form.imageCode || !form.image) {
+    if (!form.province || !form.city || !form.barangay || !form.date || !form.time || !form.imageCode || !form.image) {
       setError("All fields are required.");
       return;
     }
@@ -72,11 +108,13 @@ const SubmitDetection = () => {
 
       const userId = localStorage.getItem("user_id");
 
+      const fullLocation = `${form.province}, ${form.city}, ${form.barangay}`;
+
       const insertRes = await fetch(`${process.env.REACT_APP_API_BASE}/insertLog.php`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          location: `${form.city}, ${form.barangay}`,
+          location: fullLocation,
           date: form.date,
           time: form.time.length === 5 ? form.time + ":00" : form.time,
           image_code: form.imageCode,
@@ -90,6 +128,7 @@ const SubmitDetection = () => {
       alert("Detection submitted successfully!");
 
       setForm({
+        province: "",
         city: "",
         barangay: "",
         date: "",
@@ -118,33 +157,31 @@ const SubmitDetection = () => {
         <p>Please complete the form and upload an image to classify the rice crop.</p>
 
         <div className="formGrid">
-          <select name="city" value={form.city} onChange={handleChange}>
-            <option value="">Select City</option>
-            <option value="General Trias">General Trias</option>
-            <option value="Dasmariñas">Dasmariñas</option>
-            <option value="Imus">Imus</option>
+          <select name="province" value={form.province} onChange={handleChange}>
+            <option value="">Select Province</option>
+            {provinces.map((prov) => (
+              <option key={prov.psgc_id} value={prov.psgc_id}>
+                {prov.name}
+              </option>
+            ))}
           </select>
 
-          <select name="barangay" value={form.barangay} onChange={handleChange}>
+          <select name="city" value={form.city} onChange={handleChange} disabled={!form.province}>
+            <option value="">Select City/Municipality</option>
+            {cities.map((city) => (
+              <option key={city.psgc_id} value={city.psgc_id}>
+                {city.name}
+              </option>
+            ))}
+          </select>
+
+          <select name="barangay" value={form.barangay} onChange={handleChange} disabled={!form.city}>
             <option value="">Select Barangay</option>
-            {form.city === "General Trias" && (
-              <>
-                <option value="San Juan">San Juan</option>
-                <option value="Manggahan">Manggahan</option>
-              </>
-            )}
-            {form.city === "Dasmariñas" && (
-              <>
-                <option value="Burol">Burol</option>
-                <option value="Salitran">Salitran</option>
-              </>
-            )}
-            {form.city === "Imus" && (
-              <>
-                <option value="Alapan">Alapan</option>
-                <option value="Buhay na Tubig">Buhay na Tubig</option>
-              </>
-            )}
+            {barangays.map((brgy) => (
+              <option key={brgy.psgc_id} value={brgy.name}>
+                {brgy.name}
+              </option>
+            ))}
           </select>
 
           <input type="date" name="date" value={form.date} onChange={handleChange} />
