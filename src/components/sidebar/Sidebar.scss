@@ -7,6 +7,7 @@
     --bgColor: #f2f4f5;
     --activeGreen: #2e7d32;
     --lightGray: #f8f9fa;
+    --highlightYellow: #ffc446;
   
     --h2FontSize: 1.25rem;
     --h3FontSize: 1rem;
@@ -25,6 +26,7 @@
     flex-direction: column;
     justify-content: space-between;
   
+    // ---------- Logo Area ----------
     .logoDiv {
       padding: 0 1.5rem;
       margin-bottom: 1rem;
@@ -44,6 +46,7 @@
       }
     }
   
+    // ---------- Menu Section ----------
     .menuDiv {
       padding: 0 0 1rem 0;
   
@@ -62,7 +65,6 @@
   
         .listItem {
           width: 100%;
-          padding: 0;
   
           .menuLink {
             display: flex;
@@ -90,6 +92,7 @@
       }
     }
   
+    // ---------- Support Card ----------
     .sideBarCard {
       background: var(--hoverColor);
       border-radius: 12px;
@@ -114,6 +117,7 @@
   
       .cardContent {
         margin-top: 2rem;
+  
         h3 {
           font-size: 1rem;
           color: var(--blackColor);
@@ -140,7 +144,8 @@
           transition: 0.2s ease;
   
           &:hover {
-            background-color: #dbffe2;
+            background-color: var(--highlightYellow);
+            color: var(--blackColor);
           }
         }
   
@@ -150,6 +155,7 @@
           border-radius: 50%;
           background: var(--paleGreen);
           opacity: 0.4;
+          z-index: 0;
         }
   
         .circle1 {
