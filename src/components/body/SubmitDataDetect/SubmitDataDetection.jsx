@@ -171,7 +171,7 @@ const SubmitDetection = () => {
 
         {classification && (
           <div className={`classificationBox ${classification.toLowerCase()}`}>
-            <strong>{classification === "Healthy" ? "🌿 Healthy Crop" : "⚠ Diseased Crop"}</strong>
+            <strong>{classification === "healthy" ? "🌿 Healthy Crop" : "⚠ Diseased Crop"}</strong>
           </div>
         )}
 
