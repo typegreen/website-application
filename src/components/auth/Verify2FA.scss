@@ -27,7 +27,7 @@
 
 .grid {
   display: grid;
-  gap: 1rem;
+  gap: 0.8rem; // smaller gap for input + button
 }
 
 .loginPage {
@@ -110,7 +110,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.2rem;
+  gap: 1.1rem; // tighter spacing between logo and heading
 
   img {
     width: 45px;
@@ -132,11 +132,14 @@
 }
 
 .form {
-  margin-top: 0;
+  margin-top: 1rem;
   width: 100%;
   max-width: 300px;
   margin-left: auto;
   margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem; 
 }
 
 .inputDiv {
@@ -166,6 +169,7 @@
 
 .btn {
   margin-top: 0;
+  margin-bottom: 1rem; 
   width: 100%;
   background: #2e7d32;
   color: white;

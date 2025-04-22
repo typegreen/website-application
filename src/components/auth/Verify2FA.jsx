@@ -44,8 +44,7 @@ const Verify2FA = () => {
       <div className='container flex'>
         <div className='sideImage'>
           <h2 className='titleStyle'>Verify<br />your code</h2>
-          <p className='paraStyle'>Two-Factor Authentication</p>
-          <p className='poweredBy'>Two-Factor Authentication Powered by Brevo</p> {/* italicized line */}
+          <p className='poweredBy'>Two-Factor Authentication Powered by Brevo</p>
         </div>
 
         <div className="formDiv flex">
