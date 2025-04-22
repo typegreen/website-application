@@ -24,16 +24,11 @@ const Verify2FA = () => {
       const data = await response.json();
 
       if (response.ok && data.response.login === "success") {
-        // Store user info
         localStorage.setItem("user_id", data.response.user_id);
         localStorage.setItem("username", data.response.username);
         localStorage.setItem("access_level", data.response.access_level);
-
-        // Clean up
         localStorage.removeItem("2fa_user_id");
         localStorage.removeItem("2fa_email");
-
-        // Redirect
         navigate("/report");
       } else {
         setError(data.response || "Verification failed.");
@@ -50,6 +45,7 @@ const Verify2FA = () => {
         <div className='sideImage'>
           <h2 className='titleStyle'>Verify<br />your code</h2>
           <p className='paraStyle'>Two-Factor Authentication</p>
+          <p className='poweredBy'>Two-Factor Authentication Powered by Brevo</p> {/* italicized line */}
         </div>
 
         <div className="formDiv flex">
