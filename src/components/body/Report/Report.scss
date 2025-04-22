@@ -12,26 +12,28 @@
   }
 
   .description {
-    font-size: 14px;
+    font-size: 16x;
     color: #6c757d;
     margin-bottom: 20px;
   }
 
   .searchContainer {
     display: flex;
-    flex-wrap: wrap;
     gap: 0.5rem;
     margin-bottom: 1.5rem;
-
+    max-width: 500px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  
     input {
       flex: 1;
-      min-width: 100px;
       padding: 0.5rem;
       border: 1px solid #ccc;
       border-radius: 5px;
       font-size: 1rem;
     }
-
+  
     button {
       padding: 0.5rem 1rem;
       border: none;
@@ -41,12 +43,13 @@
       color: white;
       font-size: 1rem;
       transition: 0.3s ease-in-out;
-
+  
       &:hover {
         background-color: #218838;
       }
     }
   }
+  
 
   .errorMessage {
     color: red;
