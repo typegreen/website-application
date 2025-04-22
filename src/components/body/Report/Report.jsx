@@ -49,25 +49,41 @@ function Report() {
   return (
     <div className="mainContent">
       <h2 className="sectionTitle">Report</h2>
-      <div className="searchBar">
+      <p className="description">Search and view submitted rice crop detections.</p>
+
+      <div className="searchContainer">
         <input
           type="text"
-          placeholder="Enter User ID or image name"
+          placeholder="Enter User ID or Image Code"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         <button onClick={handleSearch}>Search</button>
       </div>
+
       {error && <p className="errorMessage">{error}</p>}
+
       {filtered.map((log, index) => (
-        <div key={index} className="reportCard">
-          <h4>Image ID: {log.image_code}</h4>
-          <p><strong>User ID:</strong> {log.user_id}</p>
-          <p><strong>Classification:</strong> {log.classification}</p>
-          <p><strong>Location:</strong> {log.location}</p>
-          <p><strong>Date:</strong> {log.date_of_detection}</p>
-          <p><strong>Time:</strong> {log.time_of_detection}</p>
-          <img src={log.rice_crop_image} alt="crop" width="250" />
+        <div key={index} className="reportContainer">
+          <div className="infoContainer">
+            <div className="detailsSection">
+              <p><strong>Image ID:</strong> {log.image_code}</p>
+              <p><strong>User ID:</strong> {log.user_id}</p>
+              <p><strong>Classification:</strong> {log.classification}</p>
+              <p><strong>Location:</strong> {log.location}</p>
+              <p><strong>Date:</strong> {log.date_of_detection}</p>
+              <p><strong>Time:</strong> {log.time_of_detection}</p>
+            </div>
+          </div>
+
+          <div className="imageContainer">
+            <img
+              src={log.rice_crop_image}
+              alt={`Captured ${log.image_code}`}
+              className="capturedImage"
+              loading="lazy"
+            />
+          </div>
         </div>
       ))}
     </div>
