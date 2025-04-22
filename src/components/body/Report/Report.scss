@@ -8,7 +8,7 @@
   h2.sectionTitle {
     text-align: left;
     margin-bottom: 0.5rem;
-    color: #154734;
+    color: green;
   }
 
   .description {
@@ -17,7 +17,6 @@
     margin-bottom: 20px;
   }
 
-  // ✅ Search Bar Fix
   .searchContainer {
     display: flex;
     flex-wrap: wrap;
@@ -26,7 +25,7 @@
 
     input {
       flex: 1;
-      min-width: 220px;
+      min-width: 100px;
       padding: 0.5rem;
       border: 1px solid #ccc;
       border-radius: 5px;
@@ -55,7 +54,6 @@
     margin-bottom: 1rem;
   }
 
-  // ✅ Report Card
   .reportContainer {
     display: flex;
     flex-direction: row;
@@ -104,7 +102,6 @@
     }
   }
 
-  // Optional: Section for disease tips
   .managementTips {
     background: #e6f7e6;
     padding: 1.5rem;

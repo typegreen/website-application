@@ -49,12 +49,12 @@ function Report() {
   return (
     <div className="mainContent">
       <h2 className="sectionTitle">Report</h2>
-      <p className="description">Search and view submitted rice crop detections.</p>
+      <p className="description">Search and view submitted rice crop detection records. Enter an image code from the detection log to access the specific entry.</p>
 
       <div className="searchContainer">
         <input
           type="text"
-          placeholder="Enter User ID or Image Code"
+          placeholder="Enter Image Code (Ex: IMG001)"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
