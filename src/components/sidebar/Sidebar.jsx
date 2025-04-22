@@ -8,6 +8,9 @@ import { RxActivityLog } from "react-icons/rx";
 import { TbReportSearch } from "react-icons/tb";
 import { IoIosSettings } from "react-icons/io";
 import { BsQuestionCircle } from "react-icons/bs";
+import { MdOutlinePhotoCameraBack } from "react-icons/md";
+import { MdOutlineFileUpload } from "react-icons/md";
+
 
 const Sidebar = () => {
   const accessLevel = localStorage.getItem("access_level");
@@ -28,7 +31,7 @@ const Sidebar = () => {
           {!isAdmin() && (
             <li className='listItem'>
               <NavLink to="/captured-image" className='menuLink flex'>
-                <RxActivityLog className='icon' />
+                <MdOutlinePhotoCameraBack className='icon' />
                 <span className='smallText'>Capture Image</span>
               </NavLink>
             </li>
@@ -46,7 +49,7 @@ const Sidebar = () => {
           {!isAdmin() && (
             <li className='listItem'>
               <NavLink to="/submit-data" className='menuLink flex'>
-                <RxActivityLog className='icon' />
+                <MdOutlineFileUpload className='icon' />
                 <span className='smallText'>Upload Data</span>
               </NavLink>
             </li>
