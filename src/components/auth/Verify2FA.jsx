@@ -56,7 +56,7 @@ const Verify2FA = () => {
           <div className="headerDiv">
             <img src={logo} alt="AniMonitor Logo"/>
             <h3>Email Verification</h3>
-            <p>We've sent a 6-digit code to:<br /><strong>{email}</strong></p>
+            <p>Mabuhay! We've sent a 6-digit code to:<br /><strong>{email}</strong></p>
           </div>
 
           <div className="form grid">
