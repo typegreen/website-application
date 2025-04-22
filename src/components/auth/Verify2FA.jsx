@@ -43,20 +43,23 @@ const Verify2FA = () => {
     <div className='verifyPageContainer flex'>
       <div className='verifyContainer flex'>
         <div className='verifySideImage'>
-          <h2 className='titleStyle'>Verify<br />your code</h2>
-          <p className='poweredBy'>Two-Factor Authentication Powered by Brevo</p>
+          <h2 className='verifyTitle'>Verify<br />your code</h2>
+          <p className='verifyPoweredBy'>Two-Factor Authentication Powered by Brevo</p>
         </div>
 
         <div className="verifyFormDiv flex">
-          <div className="headerDiv">
-            <img src={logo} alt="AniMonitor Logo"/>
+          <div className="verifyHeader">
+            <img src={logo} alt="AniMonitor Logo" />
             <h3>Email Verification</h3>
-            <p>Mabuhay! We've sent a 6-digit code to:<br /><strong>{email}</strong></p>
+            <p>
+              Mabuhay! We've sent a 6-digit code to:<br />
+              <strong>{email}</strong>
+            </p>
           </div>
 
-          <div className="verifyForm grid">
-            <div className="inputDiv">
-              <div className="input flex">
+          <div className="verifyForm">
+            <div className="verifyInputWrapper">
+              <div className="verifyInput flex">
                 <FaKey className='icon' />
                 <input
                   type='text'
@@ -68,11 +71,11 @@ const Verify2FA = () => {
               </div>
             </div>
 
-            {error && <div className="error-message">{error}</div>}
+            {error && <div className="verifyError">{error}</div>}
 
-            <button onClick={handleVerify} className='btn flex'>
+            <button onClick={handleVerify} className='verifyButton flex'>
               <span>Verify</span>
-              <AiOutlineArrowRight className='icon'/>
+              <AiOutlineArrowRight className='icon' />
             </button>
           </div>
         </div>
