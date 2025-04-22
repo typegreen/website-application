@@ -2,7 +2,11 @@ import React, { useState } from "react";
 import "./CapturedImage.scss";
 import anilogo from "./anilogo.png";
 
+<<<<<<< HEAD
 const RPI_SERVER = "http://192.168.1.23:8080"; 
+=======
+const RPI_LOCAL_API = "http://localhost:8080"; // ✅ Localhost for Pi browser testing
+>>>>>>> 7c57a43734fce27af6b54b88213ccb430672db78
 
 const CapturedImage = () => {
   const [imageSrc, setImageSrc] = useState(null);
@@ -15,7 +19,7 @@ const CapturedImage = () => {
     setImageSrc(null);
 
     try {
-      const res = await fetch(`${RPI_SERVER}/capture`, {
+      const res = await fetch(`${RPI_LOCAL_API}/capture`, {
         method: "POST",
       });
 
@@ -23,9 +27,12 @@ const CapturedImage = () => {
         throw new Error("Flask server returned an error.");
       }
 
-      const blob = await res.blob();
-      const imageUrl = URL.createObjectURL(blob);
-      setImageSrc(imageUrl);
+      const data = await res.json();
+      if (!data.image_url) {
+        throw new Error("No image returned.");
+      }
+
+      setImageSrc(data.image_url); // Supabase public URL
     } catch (err) {
       console.error(err);
       setError("❌ Failed to capture image from the Raspberry Pi.");
@@ -47,7 +54,11 @@ const CapturedImage = () => {
 
   return (
     <div className="mainContent">
+<<<<<<< HEAD
       <h1>Remote NDVI Capture</h1>
+=======
+      <h2>Remote NDVI Capture (Local Pi Mode)</h2>
+>>>>>>> 7c57a43734fce27af6b54b88213ccb430672db78
 
       <div className="cameraContainer">
         {loading ? (
