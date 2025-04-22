@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Login.scss'; // reuse the same SCSS
+import './Verify2FA.scss';
 import logo from '../../assets/Login/logo.png';
 import { AiOutlineArrowRight } from "react-icons/ai";
 import { FaKey } from 'react-icons/fa';
