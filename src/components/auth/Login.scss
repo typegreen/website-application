@@ -255,19 +255,6 @@ img, video{
       }
     }
   }
-
-  .forgotPassword {
-    font-size: 14px;
-    color: var(--blackColor);
-    opacity: 0.9;
-    text-align: center;
-
-    a {
-      text-decoration: underline;
-      cursor: pointer;
-      color: green;
-    }
-  }
 }
 
 @media screen and (max-width: 1024px) {
