@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./CapturedImage.scss";
 import anilogo from "./anilogo.png";
 
-const RPI_SERVER = "http://<RPi-IP>:8080"; // 🔁 Replace this with your actual Pi IP
+const RPI_SERVER = "http://192.168.1.23:8080"; // 🔁 Replace this with your actual Pi IP
 
 const CapturedImage = () => {
   const [imageSrc, setImageSrc] = useState(null);
