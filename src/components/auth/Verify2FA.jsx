@@ -40,15 +40,15 @@ const Verify2FA = () => {
   };
 
   return (
-    <div className='verifyPageContainer flex'>
-      <div className='verifyContainer flex'>
-        <div className='verifySideImage'>
-          <h2 className='verifyTitle'>Verify<br />your code</h2>
-          <p className='verifyPoweredBy'>Two-Factor Authentication Powered by Brevo</p>
+    <div className='verify2fa-wrapper'>
+      <div className='verify2fa-container'>
+        <div className='verify2fa-left'>
+          <h2>Verify<br />your code</h2>
+          <p>Two-Factor Authentication Powered by Brevo</p>
         </div>
 
-        <div className="verifyFormDiv flex">
-          <div className="verifyHeader">
+        <div className="verify2fa-right">
+          <div className="verify2fa-header">
             <img src={logo} alt="AniMonitor Logo" />
             <h3>Email Verification</h3>
             <p>
@@ -57,25 +57,22 @@ const Verify2FA = () => {
             </p>
           </div>
 
-          <div className="verifyForm">
-            <div className="verifyInputWrapper">
-              <div className="verifyInput flex">
-                <FaKey className='icon' />
-                <input
-                  type='text'
-                  placeholder='Enter 6-digit code'
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  maxLength="6"
-                />
-              </div>
+          <div className="verify2fa-form">
+            <div className="verify2fa-input-group">
+              <FaKey className='icon' />
+              <input
+                type='text'
+                placeholder='Enter 6-digit code'
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                maxLength="6"
+              />
             </div>
 
-            {error && <div className="verifyError">{error}</div>}
+            {error && <div className="verify2fa-error">{error}</div>}
 
-            <button onClick={handleVerify} className='verifyButton flex'>
-              <span>Verify</span>
-              <AiOutlineArrowRight className='icon' />
+            <button className='verify2fa-button' onClick={handleVerify}>
+              Verify <AiOutlineArrowRight className='icon' />
             </button>
           </div>
         </div>
