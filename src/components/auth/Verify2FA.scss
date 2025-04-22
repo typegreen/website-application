@@ -13,7 +13,8 @@
   .verify2fa-container {
     display: flex;
     width: 100%;
-    max-width: 900px;
+    max-width: 600px;
+    max-width: 400px;
     background: #fff;
     border-radius: 16px;
     overflow: hidden;
@@ -39,6 +40,7 @@
       font-weight: 700;
       margin-bottom: 1rem;
       line-height: 2.4rem;
+      color:white;
     }
 
     p {
@@ -77,6 +79,7 @@
       font-size: 1.5rem;
       font-weight: 600;
       color: #222;
+      margin-bottom: 1rem;
     }
 
     p {
