@@ -37,14 +37,23 @@ const CapturedImage = () => {
     }
   };
 
-  const downloadImage = () => {
+  const downloadImage = async () => {
     if (imageSrc) {
-      const link = document.createElement("a");
-      link.href = imageSrc;
-      link.download = "ndvi_captured.png";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      try {
+        const response = await fetch(imageSrc);
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+  
+        const link = document.createElement("a");
+        link.href = blobUrl;
+        link.download = "ndvi_captured.png";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(blobUrl); // Clean up
+      } catch (error) {
+        console.error("Download failed:", error);
+      }
     }
   };
 
