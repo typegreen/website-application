@@ -6,7 +6,7 @@
   --whiteColor: #fff;
   --blackColor: hsl(0, 0%, 18%);
   --grayText: hsl(0, 0%, 65%);
-  --bgColor: hsl(113, 11%, 85%);
+  --bgColor: #f7f9f6;
   --inputColor: hsl(330, 12%, 97%);
   --green: #2e7d32;
   --lightGreen: #a5d6a7;
@@ -27,53 +27,53 @@
 
 .grid {
   display: grid;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .loginPage {
   width: 100vw;
   height: 100vh;
-  background: #f7f9f6;
+  background: var(--bgColor);
   display: flex;
   align-items: center;
   justify-content: center;
 
   .container {
-    width: 90%;
-    max-width: 700px;
-    height: auto;
+    width: 92%;
+    max-width: 850px;
+    background: var(--whiteColor);
     display: flex;
-    border-radius: 14px;
+    border-radius: 16px;
     overflow: hidden;
-    background: white;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     flex-direction: row;
 
     @media screen and (max-width: 768px) {
       flex-direction: column;
+      width: 95%;
     }
   }
 
   .sideImage {
-    width: 40%;
-    background: linear-gradient(to bottom, #2e7d32, #81c784);
-    padding: 2rem 1.5rem;
+    width: 45%;
+    background: linear-gradient(to bottom, var(--green), var(--lightGreen));
+    padding: 3rem 1.5rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
     text-align: center;
 
     .titleStyle {
-      font-size: 1.75rem;
-      font-weight: 700;
+      font-size: 2.2rem;
+      font-weight: 800;
       color: var(--whiteColor);
-      line-height: 2.5rem;
+      line-height: 2.8rem;
     }
 
     .paraStyle {
-      font-size: 0.9rem;
+      font-size: 1rem;
       color: var(--whiteColor);
-      margin-top: 0.5rem;
+      margin-top: 0.75rem;
     }
 
     @media screen and (max-width: 768px) {
@@ -82,8 +82,8 @@
   }
 
   .formDiv {
-    width: 60%;
-    padding: 2rem;
+    width: 55%;
+    padding: 3rem 2rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -97,30 +97,32 @@
     text-align: center;
 
     img {
-      width: 65px;
+      width: 60px;
     }
 
     h3 {
       margin-top: 1rem;
-      font-size: 1.25rem;
+      font-size: 1.5rem;
+      font-weight: 600;
       color: var(--blackColor);
     }
 
     p {
       margin-top: 0.5rem;
-      font-size: 0.875rem;
+      font-size: 1rem;
       color: var(--blackColor);
 
       strong {
-        color: #2e7d32;
+        color: var(--green);
+        font-weight: 600;
       }
     }
   }
 
   .form {
-    margin-top: 1.5rem;
+    margin-top: 2rem;
     width: 100%;
-    max-width: 300px;
+    max-width: 350px;
     margin-left: auto;
     margin-right: auto;
   }
@@ -130,14 +132,14 @@
       display: flex;
       align-items: center;
       background: var(--inputColor);
-      border-radius: 8px;
+      border-radius: 10px;
       border: 1px solid var(--grayText);
-      padding: 0.75rem 1rem;
+      padding: 0.9rem 1rem;
 
       .icon {
         color: var(--blackColor);
-        font-size: 1.2rem;
-        margin-right: 0.5rem;
+        font-size: 1.3rem;
+        margin-right: 0.75rem;
       }
 
       input {
@@ -145,20 +147,20 @@
         outline: none;
         background: transparent;
         flex: 1;
-        font-size: 1rem;
+        font-size: 1.1rem;
       }
     }
   }
 
   .btn {
-    margin-top: 1rem;
+    margin-top: 1.2rem;
     width: 100%;
-    background: #2e7d32;
+    background: var(--green);
     color: white;
     border: none;
-    border-radius: 8px;
-    padding: 0.75rem;
-    font-size: 1rem;
+    border-radius: 10px;
+    padding: 0.9rem;
+    font-size: 1.05rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -174,8 +176,8 @@
       color: var(--blackColor);
 
       .icon {
+        transform: translateX(5px);
         color: var(--blackColor);
-        transform: translateX(4px);
       }
     }
   }
@@ -183,10 +185,10 @@
   .error-message {
     background: red;
     color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
     text-align: center;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     margin-top: 0.5rem;
   }
 }
