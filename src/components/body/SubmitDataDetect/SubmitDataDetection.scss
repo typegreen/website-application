@@ -2,6 +2,8 @@
   width: 82%;
   padding: 2rem;
   background-color: #f8f9fa;
+  max-width: 1100px;
+  margin: 0 auto;
 
   h1 {
     font-size: 2rem;
@@ -71,13 +73,24 @@
     }
 
     .classificationBox {
-      font-size: 1rem;
+      font-size: 1.25rem;
+      font-weight: bold;
+      padding: 1rem;
+      text-align: center;
+      border-radius: 8px;
       margin-bottom: 1.5rem;
-      background: #e3fcef;
-      padding: 0.75rem 1rem;
-      border-radius: 6px;
-      color: #155724;
-      border: 1px solid #c3e6cb;
+
+      &.healthy {
+        background-color: #e6fce6;
+        border: 2px solid #28a745;
+        color: #155724;
+      }
+
+      &.diseased {
+        background-color: #fde8e8;
+        border: 2px solid #dc3545;
+        color: #842029;
+      }
     }
 
     .submitBtn {

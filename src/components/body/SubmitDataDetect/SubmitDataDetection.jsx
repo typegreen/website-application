@@ -187,14 +187,8 @@ const SubmitDetection = () => {
           <input type="date" name="date" value={form.date} onChange={handleChange} />
           <input type="time" name="time" value={form.time} onChange={handleChange} />
 
+          <input type="text" name="imageCode" placeholder="Image Code (e.g., IMG001)" value={form.imageCode} onChange={handleChange} />
           <input type="file" name="image" accept="image/*" onChange={handleChange} />
-          <input
-            type="text"
-            name="imageCode"
-            placeholder="Image Code (e.g., IMG001)"
-            value={form.imageCode}
-            onChange={handleChange}
-          />
         </div>
 
         {imagePreview && (
@@ -204,8 +198,9 @@ const SubmitDetection = () => {
         )}
 
         {classification && (
-          <div className="classificationBox">
-            <strong>Predicted Class:</strong> {classification}
+          <div
+            className={`classificationBox ${classification.toLowerCase() === "diseased" ? "diseased" : "healthy"}`}>
+            <strong>Predicted Class: {classification}</strong>
           </div>
         )}
 
