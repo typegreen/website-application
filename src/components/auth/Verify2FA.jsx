@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Login.scss'; // reuse the same SCSS
+import './Verify2FA.scss';
 import logo from '../../assets/Login/logo.png';
 import { AiOutlineArrowRight } from "react-icons/ai";
 import { FaKey } from 'react-icons/fa';
@@ -24,16 +24,11 @@ const Verify2FA = () => {
       const data = await response.json();
 
       if (response.ok && data.response.login === "success") {
-        // Store user info
         localStorage.setItem("user_id", data.response.user_id);
         localStorage.setItem("username", data.response.username);
         localStorage.setItem("access_level", data.response.access_level);
-
-        // Clean up
         localStorage.removeItem("2fa_user_id");
         localStorage.removeItem("2fa_email");
-
-        // Redirect
         navigate("/report");
       } else {
         setError(data.response || "Verification failed.");
@@ -45,23 +40,26 @@ const Verify2FA = () => {
   };
 
   return (
-    <div className='loginPage flex'>
-      <div className='container flex'>
-        <div className='sideImage'>
-          <h2 className='titleStyle'>Verify<br />your code</h2>
-          <p className='paraStyle'>Two-Factor Authentication</p>
+    <div className='verifyPageContainer flex'>
+      <div className='verifyContainer flex'>
+        <div className='verifySideImage'>
+          <h2 className='verifyTitle'>Verify<br />your code</h2>
+          <p className='verifyPoweredBy'>Two-Factor Authentication Powered by Brevo</p>
         </div>
 
-        <div className="formDiv flex">
-          <div className="headerDiv">
-            <img src={logo} alt="AniMonitor Logo"/>
+        <div className="verifyFormDiv flex">
+          <div className="verifyHeader">
+            <img src={logo} alt="AniMonitor Logo" />
             <h3>Email Verification</h3>
-            <p>We've sent a 6-digit code to:<br /><strong>{email}</strong></p>
+            <p>
+              Mabuhay! We've sent a 6-digit code to:<br />
+              <strong>{email}</strong>
+            </p>
           </div>
 
-          <div className="form grid">
-            <div className="inputDiv">
-              <div className="input flex">
+          <div className="verifyForm">
+            <div className="verifyInputWrapper">
+              <div className="verifyInput flex">
                 <FaKey className='icon' />
                 <input
                   type='text'
@@ -73,11 +71,11 @@ const Verify2FA = () => {
               </div>
             </div>
 
-            {error && <div className="error-message">{error}</div>}
+            {error && <div className="verifyError">{error}</div>}
 
-            <button onClick={handleVerify} className='btn flex'>
+            <button onClick={handleVerify} className='verifyButton flex'>
               <span>Verify</span>
-              <AiOutlineArrowRight className='icon'/>
+              <AiOutlineArrowRight className='icon' />
             </button>
           </div>
         </div>
