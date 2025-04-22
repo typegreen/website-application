@@ -11,7 +11,7 @@ import { AiOutlineSwapRight } from "react-icons/ai";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth(); // Get login function from context
+  const { login } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -37,30 +37,18 @@ const Login = () => {
       if (response.ok && data.response?.login === "pending_2fa") {
         const user_id = data.response.user_id;
         const email = data.response.email;
-      
-        // Save temporarily for use in Verify2FA.jsx
+
         localStorage.setItem("2fa_user_id", user_id);
         localStorage.setItem("2fa_email", email);
-      
-        // ✅ Trigger 2FA email
-        const emailRes = await fetch(`${process.env.REACT_APP_API_BASE}/email2FA.php`, {
+
+        await fetch(`${process.env.REACT_APP_API_BASE}/email2FA.php`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ user_id, email })
         });
-      
-        const emailData = await emailRes.json();
-        if (!emailRes.ok) {
-          console.error("2FA Email failed:", emailData);
-          setError("Failed to send 2FA code. Please try again.");
-          return;
-        }
-      
-        // Redirect to 2FA input screen
+
         navigate("/verify-2fa");
-      }
-      
-       else {
+      } else {
         setError("Invalid credentials");
       }
     } catch (err) {
@@ -70,7 +58,7 @@ const Login = () => {
   };
 
   return (
-    <div className='loginPage flex'>
+    <div className='loginPageContainer flex'>
       <div className='container flex'>
         <div className='sideImage'>
           <img src={sideimage} alt="Side" />
@@ -80,9 +68,9 @@ const Login = () => {
           </div>
         </div>
 
-        <div className="formDiv flex">
+        <div className="loginFormDiv flex">
           <div className="headerDiv">
-            <img src={logo} alt="AniMonitor Logo"/>
+            <img src={logo} alt="AniMonitor Logo" />
             <h3>Maligayang Pagbabalik!</h3>
             <p>Secure access starts here. Please log in using your credentials.</p>
           </div>
@@ -91,10 +79,10 @@ const Login = () => {
             <div className='inputDiv'>
               <label htmlFor="username"></label>
               <div className='input flex'>
-                <FaUserShield className='icon'/>
-                <input 
-                  type='text' 
-                  id='username' 
+                <FaUserShield className='icon' />
+                <input
+                  type='text'
+                  id='username'
                   placeholder='Username'
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
@@ -106,10 +94,10 @@ const Login = () => {
             <div className='inputDiv'>
               <label htmlFor="password"></label>
               <div className='input flex'>
-                <BsFillShieldLockFill className='icon'/>
-                <input 
-                  type='password' 
-                  id='password' 
+                <BsFillShieldLockFill className='icon' />
+                <input
+                  type='password'
+                  id='password'
                   placeholder='Password'
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -117,16 +105,12 @@ const Login = () => {
                 />
               </div>
             </div>
-            
-            {error && (
-              <div className="error-message">
-                {error}
-              </div>
-            )}
-            
+
+            {error && <div className="error-message">{error}</div>}
+
             <button type='submit' className='btn flex'>
               <span>Login</span>
-              <AiOutlineSwapRight className='icon'/>
+              <AiOutlineSwapRight className='icon' />
             </button>
 
             <span className='forgotPassword'>
@@ -137,6 +121,6 @@ const Login = () => {
       </div>
     </div>
   );
-}
+};
 
 export default Login;

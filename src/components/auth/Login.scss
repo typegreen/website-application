@@ -33,10 +33,6 @@ html{
   gap: 1.5rem;
 }
 
-html{
-  font-size: 90%;
-}
-
 a{
   text-decoration: none;
 }
@@ -85,7 +81,7 @@ img, video{
 }
 
 // Login
-.loginPage {
+.loginPageContainer {
   height: 100vh;
   width: 100%;
   overflow: hidden;
@@ -152,7 +148,7 @@ img, video{
     }
   }
 
-  .formDiv {
+  .loginFormDiv {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -276,53 +272,53 @@ img, video{
 }
 
 @media screen and (max-width: 1024px) {
-  .loginPage .container {
+  .loginPageContainer .container {
     width: 90%;
     flex-direction: column;
     height: auto;
     padding: 2rem;
   }
 
-  .loginPage .sideImage {
+  .loginPageContainer .sideImage {
     width: 100%;
     height: 250px;
   }
 
-  .loginPage .formDiv {
+  .loginPageContainer .loginFormDiv {
     width: 100%;
   }
 }
 
 @media screen and (max-width: 768px) {
-  .loginPage .container {
+  .loginPageContainer .container {
     width: 100%;
     height: auto;
   }
 
-  .loginPage .form {
+  .loginPageContainer .form {
     width: 90%;
     max-width: 100%;
   }
 
-  .loginPage .btn {
+  .loginPageContainer .btn {
     width: 90%;
   }
 }
 
 @media screen and (max-width: 480px) {
-  .loginPage .container {
+  .loginPageContainer .container {
     padding: 1rem;
   }
 
-  .loginPage .formDiv {
+  .loginPageContainer .loginFormDiv {
     padding: 1rem;
   }
 
-  .loginPage .sideImage {
+  .loginPageContainer .sideImage {
     height: 200px;
   }
 
-  .loginPage .headerDiv h3 {
+  .loginPageContainer .headerDiv h3 {
     font-size: 20px;
   }
 }
