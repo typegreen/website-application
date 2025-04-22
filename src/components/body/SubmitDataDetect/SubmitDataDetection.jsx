@@ -18,12 +18,11 @@ const SubmitDetection = () => {
   const handleChange = async (e) => {
     const { name, value, files } = e.target;
 
-    // Handle image upload and prediction
     if (name === "image" && files.length > 0) {
       const file = files[0];
       setForm((prev) => ({ ...prev, image: file }));
       setImagePreview(URL.createObjectURL(file));
-      await handlePrediction(file); // Run prediction on select
+      await handlePrediction(file);
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
     }
@@ -34,15 +33,14 @@ const SubmitDetection = () => {
       const formData = new FormData();
       formData.append("image", imageFile);
 
-      const predictionRes = await fetch(`${process.env.REACT_APP_FLASK_API}/predict`, {
+      const res = await fetch(`${process.env.REACT_APP_FLASK_API}/predict`, {
         method: "POST",
         body: formData,
       });
 
-      if (!predictionRes.ok) throw new Error("Prediction failed.");
-
-      const predictionData = await predictionRes.json();
-      setClassification(predictionData.class);
+      if (!res.ok) throw new Error("Prediction failed");
+      const data = await res.json();
+      setClassification(data.class);
     } catch (err) {
       console.error(err);
       setClassification("Prediction failed");
@@ -59,7 +57,6 @@ const SubmitDetection = () => {
     setError(null);
 
     try {
-      // 1. Upload image to Supabase
       const imageUpload = new FormData();
       imageUpload.append("file", form.image);
 
@@ -72,7 +69,6 @@ const SubmitDetection = () => {
       const uploadData = await uploadRes.json();
       const imageUrl = uploadData.url;
 
-      // 2. Insert detection log
       const userId = localStorage.getItem("user_id");
 
       const insertRes = await fetch(`${process.env.REACT_APP_API_BASE}/insertLog.php`, {
@@ -84,15 +80,14 @@ const SubmitDetection = () => {
           time: form.time.length === 5 ? form.time + ":00" : form.time,
           image_code: form.imageCode,
           rice_crop_image: imageUrl,
-          classification: classification,
+          classification,
           user_id: userId,
         }),
       });
 
-      if (!insertRes.ok) throw new Error("Failed to insert detection log.");
+      if (!insertRes.ok) throw new Error("Insertion failed.");
       alert("Detection submitted successfully!");
 
-      // Reset form
       setForm({ location: "", date: "", time: "", imageCode: "", image: null });
       setClassification("");
       setImagePreview(null);
@@ -112,9 +107,9 @@ const SubmitDetection = () => {
 
       <div className="settingsContainer">
         <h2>Detection Information</h2>
-        <p>Upload your image and enter detection details below.</p>
+        <p>Please fill out the form and upload an image to classify and submit your detection.</p>
 
-        <div className="addUser">
+        <div className="formGrid">
           <input
             type="text"
             name="location"
@@ -147,27 +142,23 @@ const SubmitDetection = () => {
             accept="image/*"
             onChange={handleChange}
           />
-
-          {imagePreview && (
-            <div style={{ marginTop: "1rem" }}>
-              <img
-                src={imagePreview}
-                alt="Preview"
-                style={{ width: "200px", borderRadius: "8px" }}
-              />
-            </div>
-          )}
-
-          {classification && (
-            <div style={{ marginTop: "1rem" }}>
-              <strong>Predicted Class:</strong> {classification}
-            </div>
-          )}
-
-          <button className="addBtn" onClick={handleSubmit} disabled={isSubmitting}>
-            {isSubmitting ? "Submitting..." : "Submit Detection"}
-          </button>
         </div>
+
+        {imagePreview && (
+          <div className="previewBox">
+            <img src={imagePreview} alt="Preview" />
+          </div>
+        )}
+
+        {classification && (
+          <div className="classificationBox">
+            <strong>Predicted Class:</strong> {classification}
+          </div>
+        )}
+
+        <button className="submitBtn" onClick={handleSubmit} disabled={isSubmitting}>
+          {isSubmitting ? "Submitting..." : "Submit Detection"}
+        </button>
       </div>
     </div>
   );
