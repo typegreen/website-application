@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./CapturedImage.scss";
 import anilogo from "./anilogo.png";
 
-const RPI_SERVER = "http://192.168.1.23:8080"; 
+const RPI_SERVER = "http://localhost:8080"; 
 
 const CapturedImage = () => {
   const [imageSrc, setImageSrc] = useState(null);
