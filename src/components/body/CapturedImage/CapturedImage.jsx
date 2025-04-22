@@ -1,106 +1,74 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./CapturedImage.scss";
 import anilogo from "./anilogo.png";
 
+const RPI_SERVER = "http://<RPi-IP>:8080"; // 🔁 Replace this with your actual Pi IP
+
 const CapturedImage = () => {
-  const videoRef = useRef(null);
-  const canvasRef = useRef(null);
   const [imageSrc, setImageSrc] = useState(null);
-  const [stream, setStream] = useState(null);
-  const [cameraOpen, setCameraOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  // Open Camera
-  const openCamera = async () => {
+  const captureRemotely = async () => {
+    setLoading(true);
+    setError("");
+    setImageSrc(null);
+
     try {
-      console.log("Opening Camera...");
-      const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const res = await fetch(`${RPI_SERVER}/capture`, {
+        method: "POST",
+      });
 
-      if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream;
-        videoRef.current.play();
-        console.log("Video element updated!");
+      if (!res.ok) {
+        throw new Error("Flask server returned an error.");
       }
 
-      setStream(mediaStream);
-      setCameraOpen(true);
-      setImageSrc(null);
+      const blob = await res.blob();
+      const imageUrl = URL.createObjectURL(blob);
+      setImageSrc(imageUrl);
     } catch (err) {
-      console.error("Error accessing camera:", err);
+      console.error(err);
+      setError("❌ Failed to capture image from the Raspberry Pi.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Ensure video is updated when camera opens
-  useEffect(() => {
-    if (videoRef.current && stream) {
-      videoRef.current.srcObject = stream;
-      videoRef.current.play();
-      console.log("Video source set after state update.");
-    }
-  }, [stream]);
-
-  // Capture Image
-  const captureImage = () => {
-    if (videoRef.current && canvasRef.current) {
-      const video = videoRef.current;
-      const canvas = canvasRef.current;
-      const context = canvas.getContext("2d");
-
-      // Match canvas to video size
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const imageDataURL = canvas.toDataURL("image/png", 1.0);
-      setImageSrc(imageDataURL);
-
-      // Auto-download image
+  const downloadImage = () => {
+    if (imageSrc) {
       const link = document.createElement("a");
-      link.href = imageDataURL;
-      link.download = "captured_image.png";
+      link.href = imageSrc;
+      link.download = "ndvi_captured.png";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     }
   };
 
-  // Close Camera
-  const closeCamera = () => {
-    if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
-    }
-    setStream(null);
-    setCameraOpen(false);
-    setImageSrc(null);
-    console.log("Camera closed.");
-  };
-
   return (
     <div className="mainContent">
-      <h2>Capture Image</h2>
+      <h2>Remote NDVI Capture</h2>
 
       <div className="cameraContainer">
-        {cameraOpen ? (
-          <video ref={videoRef} className="videoFeed" autoPlay playsInline width="100%" height="100%" />
+        {loading ? (
+          <p>📸 Capturing from Raspberry Pi...</p>
         ) : imageSrc ? (
-          <img src={imageSrc} alt="Captured" className="capturedImage" />
+          <img src={imageSrc} alt="NDVI Image" className="capturedImage" />
         ) : (
           <img src={anilogo} alt="AniMonitor Logo" className="logoImage" />
         )}
       </div>
 
-      <canvas ref={canvasRef} style={{ display: "none" }} />
-
       <div className="buttonContainer">
-        <button className="open-camera" onClick={openCamera}>
-          Open Camera
+        <button className="open-camera" onClick={captureRemotely} disabled={loading}>
+          {loading ? "Capturing..." : "Capture Image"}
         </button>
-        <button className="capture-image" onClick={captureImage} disabled={!cameraOpen}>
-          Capture Image
-        </button>
-        <button className="close-camera" onClick={closeCamera}>
-          Close Camera
+        <button className="capture-image" onClick={downloadImage} disabled={!imageSrc}>
+          Download Image
         </button>
       </div>
+
+      {error && <p style={{ color: "red", marginTop: "1rem" }}>{error}</p>}
     </div>
   );
 };
