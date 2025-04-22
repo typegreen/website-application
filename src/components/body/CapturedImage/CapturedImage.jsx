@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./CapturedImage.scss";
 import anilogo from "./anilogo.png";
 
-const RPI_SERVER = "http://192.168.1.23:8080"; // 🔁 Replace this with your actual Pi IP
+const RPI_SERVER = "http://192.168.1.23:8080"; 
 
 const CapturedImage = () => {
   const [imageSrc, setImageSrc] = useState(null);
@@ -47,7 +47,7 @@ const CapturedImage = () => {
 
   return (
     <div className="mainContent">
-      <h2>Remote NDVI Capture</h2>
+      <h1>Remote NDVI Capture</h1>
 
       <div className="cameraContainer">
         {loading ? (
