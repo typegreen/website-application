@@ -14,9 +14,14 @@
     --smallFontSize: 0.875rem;
   }
   
+  body, html {
+    background-color: var(--whiteColor);
+    margin: 0;
+    padding: 0;
+  }
+  
   .sideBar {
     background: var(--whiteColor);
-    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
     width: 18%;
     min-width: 240px;
     max-width: 300px;
@@ -25,11 +30,12 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
   
     // ---------- Logo Area ----------
     .logoDiv {
       padding: 0 1.5rem;
-      margin-bottom: 1rem;
+      margin-bottom: 0.5rem;
       display: flex;
       align-items: center;
       gap: 0.7rem;
@@ -48,24 +54,22 @@
   
     // ---------- Menu Section ----------
     .menuDiv {
-      padding: 0 0 1rem 0;
+      padding: 0;
   
       .divTitle {
         font-size: var(--h3FontSize);
         font-weight: 600;
-        padding: 0 1.5rem 1rem;
+        padding: 0 1.5rem 0.75rem;
         color: var(--blackColor);
-        opacity: 0.8;
+        opacity: 0.85;
       }
   
       .menuLists {
         display: flex;
         flex-direction: column;
-        gap: 0.3rem;
+        gap: 0.25rem;
   
         .listItem {
-          width: 100%;
-  
           .menuLink {
             display: flex;
             align-items: center;
@@ -74,7 +78,7 @@
             color: var(--grayText);
             font-size: var(--smallFontSize);
             text-decoration: none;
-            transition: 0.3s ease;
+            transition: all 0.3s ease;
             border-left: 4px solid transparent;
   
             .icon {
@@ -92,16 +96,17 @@
       }
     }
   
-    // ---------- Support Card ----------
+    // ---------- Support Hub Card ----------
     .sideBarCard {
-      background: var(--hoverColor);
+      background: var(--lightGray);
+      border: 1px solid #e0e0e0;
       border-radius: 12px;
       padding: 1.2rem 1rem;
       margin: 0 1.5rem 1.5rem;
       position: relative;
       text-align: center;
       overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
   
       .icon {
         position: absolute;
@@ -137,7 +142,7 @@
           color: var(--activeGreen);
           font-weight: 600;
           font-size: 0.85rem;
-          padding: 0.4rem 1rem;
+          padding: 0.5rem 1rem;
           border-radius: 6px;
           border: none;
           cursor: pointer;
