@@ -15,7 +15,6 @@ const SubmitDetection = () => {
   const [provinces, setProvinces] = useState([]);
   const [cities, setCities] = useState([]);
   const [barangays, setBarangays] = useState([]);
-
   const [error, setError] = useState(null);
   const [classification, setClassification] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
@@ -24,19 +23,14 @@ const SubmitDetection = () => {
   useEffect(() => {
     fetch("https://psgc.cloud/api/provinces")
       .then((res) => res.json())
-      .then((data) => setProvinces(data))
-      .catch((err) => console.error("Error fetching provinces", err));
+      .then((data) => setProvinces(data));
   }, []);
 
   useEffect(() => {
     if (form.province) {
       fetch(`https://psgc.cloud/api/provinces/${form.province}/cities-municipalities`)
         .then((res) => res.json())
-        .then((data) => setCities(data))
-        .catch((err) => console.error("Error fetching cities", err));
-    } else {
-      setCities([]);
-      setForm((prev) => ({ ...prev, city: "", barangay: "" }));
+        .then((data) => setCities(data));
     }
   }, [form.province]);
 
@@ -44,17 +38,12 @@ const SubmitDetection = () => {
     if (form.city) {
       fetch(`https://psgc.cloud/api/cities-municipalities/${form.city}/barangays`)
         .then((res) => res.json())
-        .then((data) => setBarangays(data))
-        .catch((err) => console.error("Error fetching barangays", err));
-    } else {
-      setBarangays([]);
-      setForm((prev) => ({ ...prev, barangay: "" }));
+        .then((data) => setBarangays(data));
     }
   }, [form.city]);
 
   const handleChange = async (e) => {
     const { name, value, files } = e.target;
-
     if (name === "image" && files.length > 0) {
       const file = files[0];
       setForm((prev) => ({ ...prev, image: file }));
@@ -75,11 +64,9 @@ const SubmitDetection = () => {
         body: formData,
       });
 
-      if (!res.ok) throw new Error("Prediction failed");
       const data = await res.json();
       setClassification(data.class);
-    } catch (err) {
-      console.error(err);
+    } catch {
       setClassification("Prediction failed");
     }
   };
@@ -102,45 +89,29 @@ const SubmitDetection = () => {
         body: imageUpload,
       });
 
-      if (!uploadRes.ok) throw new Error("Image upload failed.");
       const uploadData = await uploadRes.json();
-      const imageUrl = uploadData.url;
-
       const userId = localStorage.getItem("user_id");
-
-      const fullLocation = `${form.province}, ${form.city}, ${form.barangay}`;
 
       const insertRes = await fetch(`${process.env.REACT_APP_API_BASE}/insertLog.php`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          location: fullLocation,
+          location: `${form.province}, ${form.city}, ${form.barangay}`,
           date: form.date,
-          time: form.time.length === 5 ? form.time + ":00" : form.time,
+          time: form.time,
           image_code: form.imageCode,
-          rice_crop_image: imageUrl,
+          rice_crop_image: uploadData.url,
           classification,
           user_id: userId,
         }),
       });
 
-      if (!insertRes.ok) throw new Error("Insertion failed.");
       alert("Detection submitted successfully!");
-
-      setForm({
-        province: "",
-        city: "",
-        barangay: "",
-        date: "",
-        time: "",
-        imageCode: "",
-        image: null,
-      });
+      setForm({ province: "", city: "", barangay: "", date: "", time: "", imageCode: "", image: null });
       setClassification("");
       setImagePreview(null);
-    } catch (err) {
-      console.error(err);
-      setError("Something went wrong during submission.");
+    } catch {
+      setError("Something went wrong.");
     } finally {
       setIsSubmitting(false);
     }
@@ -149,45 +120,42 @@ const SubmitDetection = () => {
   return (
     <div className="mainContent">
       <h1>Submit Detection</h1>
-
       {error && <div className="error-message">{error}</div>}
-
       <div className="settingsContainer">
         <h2>Detection Information</h2>
         <p>Please complete the form and upload an image to classify the rice crop.</p>
 
-        <div className="formGrid">
+        <div className="rowGroup">
           <select name="province" value={form.province} onChange={handleChange}>
             <option value="">Select Province</option>
-            {provinces.map((prov) => (
-              <option key={prov.psgc_id} value={prov.psgc_id}>
-                {prov.name}
-              </option>
+            {provinces.map((p) => (
+              <option key={p.psgc_id} value={p.psgc_id}>{p.name}</option>
             ))}
           </select>
-
           <select name="city" value={form.city} onChange={handleChange} disabled={!form.province}>
             <option value="">Select City/Municipality</option>
-            {cities.map((city) => (
-              <option key={city.psgc_id} value={city.psgc_id}>
-                {city.name}
-              </option>
+            {cities.map((c) => (
+              <option key={c.psgc_id} value={c.psgc_id}>{c.name}</option>
             ))}
           </select>
-
           <select name="barangay" value={form.barangay} onChange={handleChange} disabled={!form.city}>
             <option value="">Select Barangay</option>
-            {barangays.map((brgy) => (
-              <option key={brgy.psgc_id} value={brgy.name}>
-                {brgy.name}
-              </option>
+            {barangays.map((b) => (
+              <option key={b.psgc_id} value={b.name}>{b.name}</option>
             ))}
           </select>
-
           <input type="date" name="date" value={form.date} onChange={handleChange} />
           <input type="time" name="time" value={form.time} onChange={handleChange} />
+        </div>
 
-          <input type="text" name="imageCode" placeholder="Image Code (e.g., IMG001)" value={form.imageCode} onChange={handleChange} />
+        <div className="rowGroup">
+          <input
+            type="text"
+            name="imageCode"
+            placeholder="Image Code (e.g., IMG001)"
+            value={form.imageCode}
+            onChange={handleChange}
+          />
           <input type="file" name="image" accept="image/*" onChange={handleChange} />
         </div>
 
@@ -198,9 +166,8 @@ const SubmitDetection = () => {
         )}
 
         {classification && (
-          <div
-            className={`classificationBox ${classification.toLowerCase() === "diseased" ? "diseased" : "healthy"}`}>
-            <strong>Predicted Class: {classification}</strong>
+          <div className={`classificationBox ${classification.toLowerCase()}`}>
+            <strong>{classification === "Healthy" ? "🌿 Healthy Crop" : "⚠ Diseased Crop"}</strong>
           </div>
         )}
 
