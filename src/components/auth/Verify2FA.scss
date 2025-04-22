@@ -58,7 +58,7 @@
 }
 
 .sideImage {
-  width: 40%;
+  width: 50%;
   flex: 1;
   background: linear-gradient(to bottom, #2e7d32, #81c784);
   padding: 2rem 1.5rem;
@@ -102,7 +102,7 @@
   text-align: center;
 
   img {
-    width: 55px;
+    width: 45px;
   }
 
   h3 {
@@ -115,7 +115,7 @@
     margin-top: 0.5rem;
     font-size: 1.20rem;
     color: var(--blackColor);
-    margin-left: 2.25rem;
+    margin-left: 2.30rem;
 
     strong {
       color: var(--green);
