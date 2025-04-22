@@ -125,25 +125,28 @@ const SubmitDetection = () => {
         <h2>Detection Information</h2>
         <p>Please complete the form and upload an image to classify the rice crop.</p>
 
-        <div className="rowGroup">
+                <div className="rowGroup">
           <select name="province" value={form.province} onChange={handleChange}>
             <option value="">Select Province</option>
             {provinces.map((p) => (
               <option key={p.psgc_id} value={p.psgc_id}>{p.name}</option>
             ))}
           </select>
+
           <select name="city" value={form.city} onChange={handleChange} disabled={!form.province}>
             <option value="">Select City/Municipality</option>
             {cities.map((c) => (
               <option key={c.psgc_id} value={c.psgc_id}>{c.name}</option>
             ))}
           </select>
+
           <select name="barangay" value={form.barangay} onChange={handleChange} disabled={!form.city}>
             <option value="">Select Barangay</option>
             {barangays.map((b) => (
               <option key={b.psgc_id} value={b.name}>{b.name}</option>
             ))}
           </select>
+
           <input type="date" name="date" value={form.date} onChange={handleChange} />
           <input type="time" name="time" value={form.time} onChange={handleChange} />
         </div>
@@ -158,6 +161,7 @@ const SubmitDetection = () => {
           />
           <input type="file" name="image" accept="image/*" onChange={handleChange} />
         </div>
+
 
         {imagePreview && (
           <div className="previewBox">
