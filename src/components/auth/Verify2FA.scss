@@ -31,15 +31,15 @@
 }
 
 .loginPage {
-  width: 100vw;
-  height: 100vh;
+  width: 70vw;
+  height: 70vh;
   background: var(--bgColor);
   display: flex;
   align-items: center;
   justify-content: center;
 
   .container {
-    width: 70%;
+    width: 92%;
     max-width: 850px;
     background: var(--whiteColor);
     display: flex;
@@ -138,7 +138,7 @@
 
       .icon {
         color: var(--blackColor);
-        font-size: 1.3rem;
+        font-size: 2rem;
         margin-right: 0.75rem;
       }
 
