@@ -40,21 +40,21 @@ const Verify2FA = () => {
   };
 
   return (
-    <div className='loginPage flex'>
-      <div className='container flex'>
-        <div className='sideImage'>
+    <div className='verifyPageContainer flex'>
+      <div className='verifyContainer flex'>
+        <div className='verifySideImage'>
           <h2 className='titleStyle'>Verify<br />your code</h2>
           <p className='poweredBy'>Two-Factor Authentication Powered by Brevo</p>
         </div>
 
-        <div className="formDiv flex">
+        <div className="verifyFormDiv flex">
           <div className="headerDiv">
             <img src={logo} alt="AniMonitor Logo"/>
             <h3>Email Verification</h3>
             <p>Mabuhay! We've sent a 6-digit code to:<br /><strong>{email}</strong></p>
           </div>
 
-          <div className="form grid">
+          <div className="verifyForm grid">
             <div className="inputDiv">
               <div className="input flex">
                 <FaKey className='icon' />

@@ -27,10 +27,10 @@
 
 .grid {
   display: grid;
-  gap: 0.8rem; // smaller gap for input + button
+  gap: 0.8rem;
 }
 
-.loginPage {
+.verifyPageContainer {
   width: 100vw;
   min-height: 100vh;
   background: #f7f9f6;
@@ -40,7 +40,7 @@
   padding: 3rem 1rem;
 }
 
-.container {
+.verifyContainer {
   width: 90%;
   max-width: 625px;
   max-height: 425px;
@@ -57,7 +57,7 @@
   }
 }
 
-.sideImage {
+.verifySideImage {
   width: 50%;
   flex: 1;
   background: linear-gradient(to bottom, #2e7d32, #81c784);
@@ -92,7 +92,7 @@
   }
 }
 
-.formDiv {
+.verifyFormDiv {
   width: 60%;
   flex: 1;
   padding: 2rem;
@@ -110,7 +110,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0rem; 
+  gap: 0rem;
 
   img {
     width: 45px;
@@ -131,7 +131,7 @@
   }
 }
 
-.form {
+.verifyForm {
   margin-top: 0.5rem;
   width: 100%;
   max-width: 300px;
@@ -139,11 +139,12 @@
   margin-right: auto;
   display: flex;
   flex-direction: column;
-  gap: 0rem; 
+  gap: 0rem;
 }
 
 .inputDiv {
-    gap: 0rem;
+  gap: 0rem;
+
   .input {
     display: flex;
     align-items: center;
@@ -170,7 +171,7 @@
 
 .btn {
   margin-top: 0;
-  margin-bottom: 1rem; 
+  margin-bottom: 1rem;
   width: 100%;
   background: #2e7d32;
   color: white;
