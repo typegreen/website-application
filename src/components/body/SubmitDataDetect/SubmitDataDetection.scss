@@ -1,103 +1,103 @@
 .mainContent {
-    width: 82%;
+  width: 82%;
+  padding: 2rem;
+  background-color: #f8f9fa;
+
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: green;
+  }
+
+  .error-message {
+    background: #f8d7da;
+    color: #842029;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    border: 1px solid #f5c2c7;
+  }
+
+  .settingsContainer {
+    background: white;
     padding: 2rem;
-    background-color: #f8f9fa;
-  
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 1.5rem;
-      color: green;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: #154734;
     }
-  
-    .error-message {
-      background: #f8d7da;
-      color: #842029;
+
+    p {
+      font-size: 0.95rem;
+      color: #555;
+      margin-bottom: 1.5rem;
+    }
+
+    .formGrid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+
+      select,
+      input[type="text"],
+      input[type="date"],
+      input[type="time"],
+      input[type="file"] {
+        padding: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 0.95rem;
+        width: 100%;
+      }
+
+      @media screen and (max-width: 768px) {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .previewBox {
+      margin-bottom: 1rem;
+
+      img {
+        width: 220px;
+        height: auto;
+        border-radius: 8px;
+        object-fit: cover;
+      }
+    }
+
+    .classificationBox {
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+      background: #e3fcef;
       padding: 0.75rem 1rem;
       border-radius: 6px;
-      margin-bottom: 1rem;
-      border: 1px solid #f5c2c7;
+      color: #155724;
+      border: 1px solid #c3e6cb;
     }
-  
-    .settingsContainer {
-      background: white;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  
-      h2 {
-        font-size: 1.5rem;
-        margin-bottom: 0.5rem;
-        color: #154734;
+
+    .submitBtn {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: #218838;
       }
-  
-      p {
-        font-size: 0.95rem;
-        color: #555;
-        margin-bottom: 1.5rem;
-      }
-  
-      .formGrid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-  
-        input[type="text"],
-        input[type="date"],
-        input[type="time"],
-        input[type="file"] {
-          padding: 0.5rem;
-          border: 1px solid #ccc;
-          border-radius: 5px;
-          font-size: 1rem;
-          width: 100%;
-        }
-  
-        @media screen and (max-width: 768px) {
-          grid-template-columns: 1fr;
-        }
-      }
-  
-      .previewBox {
-        margin-bottom: 1rem;
-  
-        img {
-          width: 220px;
-          height: auto;
-          border-radius: 8px;
-          object-fit: cover;
-        }
-      }
-  
-      .classificationBox {
-        font-size: 1rem;
-        margin-bottom: 1.5rem;
-        background: #e3fcef;
-        padding: 0.75rem 1rem;
-        border-radius: 6px;
-        color: #155724;
-        border: 1px solid #c3e6cb;
-      }
-  
-      .submitBtn {
-        background-color: #28a745;
-        color: white;
-        border: none;
-        padding: 0.75rem 1.5rem;
-        border-radius: 6px;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-  
-        &:hover {
-          background-color: #218838;
-        }
-  
-        &:disabled {
-          background-color: #94d3a2;
-          cursor: not-allowed;
-        }
+
+      &:disabled {
+        background-color: #94d3a2;
+        cursor: not-allowed;
       }
     }
   }
-  
+}

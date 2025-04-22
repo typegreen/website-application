@@ -3,7 +3,8 @@ import "./SubmitDataDetection.scss";
 
 const SubmitDetection = () => {
   const [form, setForm] = useState({
-    location: "",
+    city: "",
+    barangay: "",
     date: "",
     time: "",
     imageCode: "",
@@ -48,7 +49,7 @@ const SubmitDetection = () => {
   };
 
   const handleSubmit = async () => {
-    if (!form.location || !form.date || !form.time || !form.imageCode || !form.image) {
+    if (!form.city || !form.barangay || !form.date || !form.time || !form.imageCode || !form.image) {
       setError("All fields are required.");
       return;
     }
@@ -75,7 +76,7 @@ const SubmitDetection = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          location: form.location,
+          location: `${form.city}, ${form.barangay}`,
           date: form.date,
           time: form.time.length === 5 ? form.time + ":00" : form.time,
           image_code: form.imageCode,
@@ -88,7 +89,14 @@ const SubmitDetection = () => {
       if (!insertRes.ok) throw new Error("Insertion failed.");
       alert("Detection submitted successfully!");
 
-      setForm({ location: "", date: "", time: "", imageCode: "", image: null });
+      setForm({
+        city: "",
+        barangay: "",
+        date: "",
+        time: "",
+        imageCode: "",
+        image: null,
+      });
       setClassification("");
       setImagePreview(null);
     } catch (err) {
@@ -107,39 +115,47 @@ const SubmitDetection = () => {
 
       <div className="settingsContainer">
         <h2>Detection Information</h2>
-        <p>Please fill out the form and upload an image to classify and submit your detection.</p>
+        <p>Please complete the form and upload an image to classify the rice crop.</p>
 
         <div className="formGrid">
-          <input
-            type="text"
-            name="location"
-            placeholder="Location"
-            value={form.location}
-            onChange={handleChange}
-          />
-          <input
-            type="date"
-            name="date"
-            value={form.date}
-            onChange={handleChange}
-          />
-          <input
-            type="time"
-            name="time"
-            value={form.time}
-            onChange={handleChange}
-          />
+          <select name="city" value={form.city} onChange={handleChange}>
+            <option value="">Select City</option>
+            <option value="General Trias">General Trias</option>
+            <option value="Dasmariñas">Dasmariñas</option>
+            <option value="Imus">Imus</option>
+          </select>
+
+          <select name="barangay" value={form.barangay} onChange={handleChange}>
+            <option value="">Select Barangay</option>
+            {form.city === "General Trias" && (
+              <>
+                <option value="San Juan">San Juan</option>
+                <option value="Manggahan">Manggahan</option>
+              </>
+            )}
+            {form.city === "Dasmariñas" && (
+              <>
+                <option value="Burol">Burol</option>
+                <option value="Salitran">Salitran</option>
+              </>
+            )}
+            {form.city === "Imus" && (
+              <>
+                <option value="Alapan">Alapan</option>
+                <option value="Buhay na Tubig">Buhay na Tubig</option>
+              </>
+            )}
+          </select>
+
+          <input type="date" name="date" value={form.date} onChange={handleChange} />
+          <input type="time" name="time" value={form.time} onChange={handleChange} />
+
+          <input type="file" name="image" accept="image/*" onChange={handleChange} />
           <input
             type="text"
             name="imageCode"
             placeholder="Image Code (e.g., IMG001)"
             value={form.imageCode}
-            onChange={handleChange}
-          />
-          <input
-            type="file"
-            name="image"
-            accept="image/*"
             onChange={handleChange}
           />
         </div>
