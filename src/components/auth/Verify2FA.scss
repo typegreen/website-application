@@ -42,8 +42,8 @@
 
 .container {
   width: 90%;
-  max-width: 600px;
-  max-height: 400px;
+  max-width: 700px;
+  max-height: 450px;
   display: flex;
   border-radius: 14px;
   overflow: hidden;
@@ -102,7 +102,7 @@
   text-align: center;
 
   img {
-    width: 65px;
+    width: 55px;
   }
 
   h3 {
@@ -113,7 +113,7 @@
 
   p {
     margin-top: 0.5rem;
-    font-size: 0.875rem;
+    font-size: 1rem;
     color: var(--blackColor);
 
     strong {
