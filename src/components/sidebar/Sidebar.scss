@@ -24,13 +24,11 @@
     align-items: flex-start;
     justify-content: flex-start;
   
-    // 🔧 1. Reduced spacing after logo
     .logoDiv {
       padding: 1rem 1.5rem 0;
       margin-bottom: 0.5rem;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
   
       img {
         max-width: 30px;
@@ -47,7 +45,7 @@
     }
   
     .menuDiv {
-      padding-top: 0.5rem; // 🔧 reduced from 2rem to 0.5rem
+      padding-top: 0rem; 
       margin: 0;
       width: 100%;
   
@@ -142,7 +140,6 @@
           text-align: center;
         }
   
-        // 🔧 2. Update hover for email button
         .btn {
           position: relative;
           align-items: center;
