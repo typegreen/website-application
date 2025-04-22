@@ -43,7 +43,7 @@ const DetectionLog = () => {
   return (
     <div className="mainContent">
       <div className="detection-logs-container">
-        <h2>Detection Logs</h2>
+        <h1>Detection Logs</h1>
         <p className="description">
           This table contains a record of all uploaded rice crop detections, including classification results, location, date, and time.
         </p>

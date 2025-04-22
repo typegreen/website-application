@@ -48,7 +48,7 @@ function Report() {
 
   return (
     <div className="mainContent">
-      <h2 className="sectionTitle">Report</h2>
+      <h1 className="sectionTitle">Report</h1>
       <p className="description">Search and view submitted rice crop detection records. Enter an image code from the detection log to access the specific entry.</p>
 
       <div className="searchContainer">

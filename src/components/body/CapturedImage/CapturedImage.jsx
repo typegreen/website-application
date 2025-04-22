@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import "./CapturedImage.scss";
 import anilogo from "./anilogo.png";
 
-// ✅ Replace with your actual local IP of the Raspberry Pi
-const RPI_SERVER = "http://192.168.1.23:8080";
+const RPI_SERVER = "http://192.168.1.23:8080"; 
 
 const CapturedImage = () => {
   const [imageSrc, setImageSrc] = useState(null);
@@ -25,12 +24,11 @@ const CapturedImage = () => {
       }
 
       const data = await res.json();
-
-      if (data.image_url) {
-        setImageSrc(data.image_url); // ✅ Set the Supabase public URL
-      } else {
-        throw new Error("No image URL returned.");
+      if (!data.image_url) {
+        throw new Error("No image returned.");
       }
+
+      setImageSrc(data.image_url); // Supabase public URL
     } catch (err) {
       console.error(err);
       setError("❌ Failed to capture image from the Raspberry Pi.");
@@ -52,7 +50,7 @@ const CapturedImage = () => {
 
   return (
     <div className="mainContent">
-      <h2>Remote NDVI Capture</h2>
+      <h2>Remote NDVI Capture (Local Pi Mode)</h2>
 
       <div className="cameraContainer">
         {loading ? (
