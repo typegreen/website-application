@@ -42,51 +42,56 @@ const DetectionLog = () => {
 
   return (
     <div className="mainContent">
-      <div className="header flex">
-        <h2 className="sectionTitle">Detection Logs</h2>
-      </div>
+      <div className="detection-logs-container">
+        <h2>Detection Logs</h2>
+        <p className="description">
+          This table contains a record of all uploaded rice crop detections, including classification results, location, date, and time.
+        </p>
 
-      {error && <div className="errorMessage">{error}</div>}
+        {error && <div className="errorMessage">{error}</div>}
 
-      <div className="tableContainer">
-        <table className="logs-table">
-          <thead>
-            <tr>
-              <th>User ID</th>
-              <th>Classification</th>
-              <th>Image</th>
-              <th>Location</th>
-              <th>Date</th>
-              <th>Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            {logs.map((log) => (
-              <tr key={log.log_id}>
-                <td>{log.user_id}</td>
-                <td className={log.classification.toLowerCase()}>{log.classification}</td>
-                <td>
-                  <a 
-                    href={log.rice_crop_image} 
-                    download 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                  >
-                    <img 
-                      src={log.rice_crop_image} 
-                      alt="crop" 
-                      className="log-image" 
-                      style={{ width: "100px", height: "auto", cursor: "pointer" }}
-                    />
-                  </a>
-                </td>
-                <td>{log.location}</td>
-                <td>{log.date_of_detection}</td>
-                <td>{log.time_of_detection}</td>
+        <div className="tableContainer">
+          <table className="logs-table">
+            <thead>
+              <tr>
+                <th>User ID</th>
+                <th>Classification</th>
+                <th>Image</th>
+                <th>Location</th>
+                <th>Date</th>
+                <th>Time</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {logs.map((log) => (
+                <tr key={log.log_id}>
+                  <td>{log.user_id}</td>
+                  <td className={log.classification.toLowerCase()}>
+                    {log.classification}
+                  </td>
+                  <td>
+                    <a 
+                      href={log.rice_crop_image} 
+                      download 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                    >
+                      <img 
+                        src={log.rice_crop_image} 
+                        alt="crop" 
+                        className="log-image" 
+                        style={{ width: "100px", height: "auto", cursor: "pointer" }}
+                      />
+                    </a>
+                  </td>
+                  <td>{log.location}</td>
+                  <td>{log.date_of_detection}</td>
+                  <td>{log.time_of_detection}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
