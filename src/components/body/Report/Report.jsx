@@ -49,7 +49,10 @@ function Report() {
   return (
     <div className="mainContent">
       <h1 className="sectionTitle">Report</h1>
-      <p className="description">Search and view submitted rice crop detection records. Enter an image code from the detection log to access the specific entry.</p>
+      <p className="description">
+        Search and view submitted rice crop detection records. Enter an image
+        code from the detection log to access the specific entry.
+      </p>
 
       <div className="searchContainer">
         <input
@@ -75,14 +78,14 @@ function Report() {
               <p><strong>Time:</strong> {log.time_of_detection}</p>
             </div>
 
-            {log.classification.toLowerCase() === "diseased" && (
+            {searchTerm && log.classification.toLowerCase() === "diseased" && (
               <div className="managementTips">
-                <h3>🌾 Disease Management & Prevention Tips</h3>
+                <h3>Disease Management Tips</h3>
                 <ul>
-                  <li><strong>Isolation:</strong> Remove and burn tungro-infected plants to prevent spread.</li>
-                  <li><strong>Bacterial Handling:</strong> Bury infected crops or cut the diseased portions.</li>
-                  <li><strong>Symptom Watch:</strong> Look for yellowing within 2 weeks; green leafhoppers often carry tungro.</li>
-                  <li><strong>Avoid Pesticide Overuse:</strong> Too much pesticide can worsen the disease and reduce resistance.</li>
+                  <li><strong>Isolation:</strong> For tungro, uproot and burn infected plants. For bacterial infections, bury or cut the affected parts.</li>
+                  <li><strong>Early Detection:</strong> Monitor for symptoms within the first 2 weeks, including yellowing or stunted growth.</li>
+                  <li><strong>Vector Control:</strong> Watch for green leafhoppers which transmit tungro virus.</li>
+                  <li><strong>Pesticide Warning:</strong> Overuse of pesticides can worsen infections or weaken plant defenses.</li>
                 </ul>
               </div>
             )}
