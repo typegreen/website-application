@@ -6,6 +6,7 @@ function Report() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filtered, setFiltered] = useState([]);
   const [error, setError] = useState("");
+  const [searchClicked, setSearchClicked] = useState(false); // ✅ Added to track when user actually clicks Search
 
   useEffect(() => {
     const userId = localStorage.getItem("user_id");
@@ -31,6 +32,8 @@ function Report() {
   }, []);
 
   const handleSearch = () => {
+    setSearchClicked(true); // ✅ Mark that search was explicitly triggered
+
     const result = logs.find(
       (log) =>
         log.user_id.toString() === searchTerm ||
@@ -78,7 +81,8 @@ function Report() {
               <p><strong>Time:</strong> {log.time_of_detection}</p>
             </div>
 
-            {searchTerm && log.classification.toLowerCase() === "diseased" && (
+            {/* ✅ Show tips only when user has searched and result is "diseased" */}
+            {searchClicked && log.classification.toLowerCase() === "diseased" && (
               <div className="managementTips">
                 <h3>Disease Management Tips</h3>
                 <ul>
