@@ -74,6 +74,18 @@ function Report() {
               <p><strong>Date:</strong> {log.date_of_detection}</p>
               <p><strong>Time:</strong> {log.time_of_detection}</p>
             </div>
+
+            {log.classification.toLowerCase() === "diseased" && (
+              <div className="managementTips">
+                <h3>🌾 Disease Management & Prevention Tips</h3>
+                <ul>
+                  <li><strong>Isolation:</strong> Remove and burn tungro-infected plants to prevent spread.</li>
+                  <li><strong>Bacterial Handling:</strong> Bury infected crops or cut the diseased portions.</li>
+                  <li><strong>Symptom Watch:</strong> Look for yellowing within 2 weeks; green leafhoppers often carry tungro.</li>
+                  <li><strong>Avoid Pesticide Overuse:</strong> Too much pesticide can worsen the disease and reduce resistance.</li>
+                </ul>
+              </div>
+            )}
           </div>
 
           <div className="imageContainer">
