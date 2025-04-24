@@ -17,6 +17,7 @@ const SubmitDetection = () => {
   const [barangays, setBarangays] = useState([]);
   const [error, setError] = useState(null);
   const [classification, setClassification] = useState("");
+  const [confidence, setConfidence] = useState(null); // ✅ New state
   const [imagePreview, setImagePreview] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -66,8 +67,10 @@ const SubmitDetection = () => {
 
       const data = await res.json();
       setClassification(data.class);
+      setConfidence(data.confidence); // ✅ Store confidence score
     } catch {
       setClassification("Prediction failed");
+      setConfidence(null); // ✅ Reset confidence if failed
     }
   };
 
@@ -109,6 +112,7 @@ const SubmitDetection = () => {
       alert("Detection submitted successfully!");
       setForm({ province: "", city: "", barangay: "", date: "", time: "", imageCode: "", image: null });
       setClassification("");
+      setConfidence(null); // ✅ Reset confidence after submit
       setImagePreview(null);
     } catch {
       setError("Something went wrong.");
@@ -125,7 +129,7 @@ const SubmitDetection = () => {
         <h2>Detection Information</h2>
         <p>Please complete the form and upload an image to classify the rice crop.</p>
 
-                <div className="rowGroup">
+        <div className="rowGroup">
           <select name="province" value={form.province} onChange={handleChange}>
             <option value="">Select Province</option>
             {provinces.map((p) => (
@@ -162,7 +166,6 @@ const SubmitDetection = () => {
           <input type="file" name="image" accept="image/*" onChange={handleChange} />
         </div>
 
-
         {imagePreview && (
           <div className="previewBox">
             <img src={imagePreview} alt="Preview" />
@@ -172,6 +175,11 @@ const SubmitDetection = () => {
         {classification && (
           <div className={`classificationBox ${classification.toLowerCase()}`}>
             <strong>{classification === "healthy" ? "🌿 Healthy Crop" : "⚠ Diseased Crop"}</strong>
+            {confidence !== null && (
+              <p style={{ marginTop: "0.5rem", fontSize: "0.95rem" }}>
+                Confidence: {(confidence * 100).toFixed(2)}%
+              </p>
+            )}
           </div>
         )}
 
