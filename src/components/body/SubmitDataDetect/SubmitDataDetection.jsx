@@ -17,9 +17,10 @@ const SubmitDetection = () => {
   const [barangays, setBarangays] = useState([]);
   const [error, setError] = useState(null);
   const [classification, setClassification] = useState("");
-  const [confidence, setConfidence] = useState(null); // ✅ New state
+  const [confidence, setConfidence] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isNDVIValid, setIsNDVIValid] = useState(false);
 
   useEffect(() => {
     fetch("https://psgc.cloud/api/provinces")
@@ -59,32 +60,48 @@ const SubmitDetection = () => {
     try {
       const formData = new FormData();
       formData.append("image", imageFile);
-  
+
       const res = await fetch(`${process.env.REACT_APP_FLASK_API}/predict`, {
         method: "POST",
         body: formData,
       });
-  
+
       const data = await res.json();
-  
+
       if (data.class === "Invalid") {
         alert(data.message || "Invalid NDVI image. Please upload a valid rice crop image.");
         setClassification("");
         setConfidence(null);
-        return; // ⛔ Prevent further action
+        setIsNDVIValid(false);
+        return;
       }
-  
+
       setClassification(data.class);
       setConfidence(data.confidence);
+      setIsNDVIValid(true);
     } catch {
       setClassification("Prediction failed");
       setConfidence(null);
+      setIsNDVIValid(false);
     }
   };
 
   const handleSubmit = async () => {
-    if (!form.province || !form.city || !form.barangay || !form.date || !form.time || !form.imageCode || !form.image) {
+    if (
+      !form.province ||
+      !form.city ||
+      !form.barangay ||
+      !form.date ||
+      !form.time ||
+      !form.imageCode ||
+      !form.image
+    ) {
       setError("All fields are required.");
+      return;
+    }
+
+    if (!isNDVIValid) {
+      setError("The uploaded image is not a valid NDVI rice crop image.");
       return;
     }
 
@@ -103,7 +120,7 @@ const SubmitDetection = () => {
       const uploadData = await uploadRes.json();
       const userId = localStorage.getItem("user_id");
 
-      const insertRes = await fetch(`${process.env.REACT_APP_API_BASE}/insertLog.php`, {
+      await fetch(`${process.env.REACT_APP_API_BASE}/insertLog.php`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -120,8 +137,9 @@ const SubmitDetection = () => {
       alert("Detection submitted successfully!");
       setForm({ province: "", city: "", barangay: "", date: "", time: "", imageCode: "", image: null });
       setClassification("");
-      setConfidence(null); // ✅ Reset confidence after submit
+      setConfidence(null);
       setImagePreview(null);
+      setIsNDVIValid(false);
     } catch {
       setError("Something went wrong.");
     } finally {
@@ -180,7 +198,7 @@ const SubmitDetection = () => {
           </div>
         )}
 
-        {classification && (
+        {classification && isNDVIValid && (
           <div className={`classificationBox ${classification.toLowerCase()}`}>
             <strong>{classification === "healthy" ? "🌿 Healthy Crop" : "⚠ Diseased Crop"}</strong>
             {confidence !== null && (
