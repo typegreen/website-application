@@ -69,7 +69,7 @@ const SubmitDetection = () => {
   
       if (data.class === "Invalid") {
         alert(data.message || "Invalid NDVI image. Please upload a valid rice crop image.");
-        setClassification("Invalid");
+        setClassification("");
         setConfidence(null);
         return; // ⛔ Prevent further action
       }
