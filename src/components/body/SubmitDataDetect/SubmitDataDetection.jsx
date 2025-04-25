@@ -59,18 +59,26 @@ const SubmitDetection = () => {
     try {
       const formData = new FormData();
       formData.append("image", imageFile);
-
+  
       const res = await fetch(`${process.env.REACT_APP_FLASK_API}/predict`, {
         method: "POST",
         body: formData,
       });
-
+  
       const data = await res.json();
+  
+      if (data.class === "Invalid") {
+        alert(data.message || "Invalid NDVI image. Please upload a valid rice crop image.");
+        setClassification("Invalid");
+        setConfidence(null);
+        return; // ⛔ Prevent further action
+      }
+  
       setClassification(data.class);
-      setConfidence(data.confidence); // ✅ Store confidence score
+      setConfidence(data.confidence);
     } catch {
       setClassification("Prediction failed");
-      setConfidence(null); // ✅ Reset confidence if failed
+      setConfidence(null);
     }
   };
 
