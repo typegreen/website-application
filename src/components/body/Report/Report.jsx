@@ -6,7 +6,9 @@ function Report() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filtered, setFiltered] = useState([]);
   const [error, setError] = useState("");
-  const [searchClicked, setSearchClicked] = useState(false); // ✅ Added to track when user actually clicks Search
+  const [searchClicked, setSearchClicked] = useState(false);
+  const [classificationFilter, setClassificationFilter] = useState("all");
+  const [dateRange, setDateRange] = useState({ start: "", end: "" });
 
   useEffect(() => {
     const userId = localStorage.getItem("user_id");
@@ -32,39 +34,97 @@ function Report() {
   }, []);
 
   const handleSearch = () => {
-    setSearchClicked(true); // ✅ Mark that search was explicitly triggered
+    setSearchClicked(true);
 
-    const result = logs.find(
-      (log) =>
-        log.user_id.toString() === searchTerm ||
-        (log.image_code &&
-          log.image_code.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
-    if (result) {
-      setFiltered([result]);
-      setError("");
-    } else {
-      setFiltered([]);
-      setError("No match found.");
+    let results = logs;
+
+    // Filter by search term
+    if (searchTerm) {
+      results = results.filter(
+        (log) =>
+          log.user_id.toString() === searchTerm ||
+          (log.image_code &&
+            log.image_code.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
     }
+
+    // Filter by classification
+    if (classificationFilter !== "all") {
+      results = results.filter(
+        (log) => log.classification.toLowerCase() === classificationFilter
+      );
+    }
+
+    // Filter by date range
+    if (dateRange.start && dateRange.end) {
+      results = results.filter((log) => {
+        const logDate = new Date(log.date_of_detection);
+        const startDate = new Date(dateRange.start);
+        const endDate = new Date(dateRange.end);
+        return logDate >= startDate && logDate <= endDate;
+      });
+    }
+
+    // Handle empty results
+    if (results.length === 0) {
+      setError("No match found.");
+      setFiltered([]);
+    } else {
+      setError("");
+      setFiltered(results);
+    }
+  };
+
+  const resetFilters = () => {
+    setSearchTerm("");
+    setClassificationFilter("all");
+    setDateRange({ start: "", end: "" });
+    setFiltered(logs);
+    setError("");
+    setSearchClicked(false);
   };
 
   return (
     <div className="mainContent">
       <h1 className="sectionTitle">Report</h1>
       <p className="description">
-        Search and view submitted rice crop detection records. Enter an image
-        code from the detection log to access the specific entry.
+        Search and view submitted rice crop detection records. Use the filters to refine your search.
       </p>
 
-      <div className="searchContainer">
+      <div className="filterContainer">
         <input
           type="text"
-          placeholder="Enter Image Code (Ex: IMG001)"
+          placeholder="Enter Image Code or User ID"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
+
+        <select
+          value={classificationFilter}
+          onChange={(e) => setClassificationFilter(e.target.value)}
+        >
+          <option value="all">All Classifications</option>
+          <option value="healthy">Healthy</option>
+          <option value="diseased">Diseased</option>
+        </select>
+
+        <input
+          type="date"
+          value={dateRange.start}
+          onChange={(e) =>
+            setDateRange((prev) => ({ ...prev, start: e.target.value }))
+          }
+        />
+        <input
+          type="date"
+          value={dateRange.end}
+          onChange={(e) =>
+            setDateRange((prev) => ({ ...prev, end: e.target.value }))
+          }
+        />
+
         <button onClick={handleSearch}>Search</button>
+        <button onClick={resetFilters}>Reset</button>
       </div>
 
       {error && <p className="errorMessage">{error}</p>}
