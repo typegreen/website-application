@@ -143,6 +143,15 @@ function Report() {
         <button onClick={resetFilters}>Reset</button>
       </div>
 
+      {/* ✅ Print button appears after search */}
+      {searchClicked && filtered.length > 0 && (
+        <div className="printContainer">
+          <button className="printBtn" onClick={() => window.print()}>
+            🖨️ Print Report
+          </button>
+        </div>
+      )}
+
       {/* ✅ Show total counts if a search was clicked */}
       {searchClicked && (
         <div className="statsContainer">
