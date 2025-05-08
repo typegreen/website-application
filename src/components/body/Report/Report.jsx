@@ -9,6 +9,8 @@ function Report() {
   const [searchClicked, setSearchClicked] = useState(false);
   const [classificationFilter, setClassificationFilter] = useState("all");
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
+  const [healthyCount, setHealthyCount] = useState(0);
+  const [diseasedCount, setDiseasedCount] = useState(0);
 
   useEffect(() => {
     const userId = localStorage.getItem("user_id");
@@ -30,6 +32,10 @@ function Report() {
         const data = Array.isArray(res) ? res : res.response || [];
         setLogs(data);
         setFiltered(data);
+
+        // Set initial counts
+        setHealthyCount(data.filter((log) => log.classification.toLowerCase() === "healthy").length);
+        setDiseasedCount(data.filter((log) => log.classification.toLowerCase() === "diseased").length);
       });
   }, []);
 
@@ -65,6 +71,12 @@ function Report() {
       });
     }
 
+    // Update classification counts
+    const healthyLogs = results.filter((log) => log.classification.toLowerCase() === "healthy");
+    const diseasedLogs = results.filter((log) => log.classification.toLowerCase() === "diseased");
+    setHealthyCount(healthyLogs.length);
+    setDiseasedCount(diseasedLogs.length);
+
     // Handle empty results
     if (results.length === 0) {
       setError("No match found.");
@@ -82,6 +94,10 @@ function Report() {
     setFiltered(logs);
     setError("");
     setSearchClicked(false);
+
+    // Reset counts
+    setHealthyCount(logs.filter((log) => log.classification.toLowerCase() === "healthy").length);
+    setDiseasedCount(logs.filter((log) => log.classification.toLowerCase() === "diseased").length);
   };
 
   return (
@@ -126,6 +142,14 @@ function Report() {
         <button onClick={handleSearch}>Search</button>
         <button onClick={resetFilters}>Reset</button>
       </div>
+
+      {/* ✅ Show total counts if a search was clicked */}
+      {searchClicked && (
+        <div className="statsContainer">
+          <p><strong>Total Healthy Logs:</strong> {healthyCount}</p>
+          <p><strong>Total Diseased Logs:</strong> {diseasedCount}</p>
+        </div>
+      )}
 
       {error && <p className="errorMessage">{error}</p>}
 
