@@ -1,13 +1,15 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./CapturedImage.scss";
-import anilogo from "./anilogo.png";
+import anilogo from "../../../assets/anilogo.png";
 
-const RPI_SERVER = "http://localhost:8080"; 
+const RPI_SERVER = "http://localhost:8080";
 
 const CapturedImage = () => {
   const [imageSrc, setImageSrc] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const captureRemotely = async () => {
     setLoading(true);
@@ -28,32 +30,22 @@ const CapturedImage = () => {
         throw new Error("No image returned.");
       }
 
-      setImageSrc(data.image_url); // Supabase public URL
+      // Set image and timestamp in localStorage
+      const currentDate = new Date();
+      const date = currentDate.toISOString().split("T")[0];
+      const time = currentDate.toTimeString().split(" ")[0];
+
+      localStorage.setItem("captured_image_url", data.image_url);
+      localStorage.setItem("captured_date", date);
+      localStorage.setItem("captured_time", time);
+
+      // Redirect to SubmitDataDetect
+      navigate("/submit-data");
     } catch (err) {
       console.error(err);
       setError("❌ Failed to capture image from the Raspberry Pi.");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const downloadImage = async () => {
-    if (imageSrc) {
-      try {
-        const response = await fetch(imageSrc);
-        const blob = await response.blob();
-        const blobUrl = URL.createObjectURL(blob);
-  
-        const link = document.createElement("a");
-        link.href = blobUrl;
-        link.download = "ndvi_captured.png";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(blobUrl); // Clean up
-      } catch (error) {
-        console.error("Download failed:", error);
-      }
     }
   };
 
@@ -74,9 +66,6 @@ const CapturedImage = () => {
       <div className="buttonContainer">
         <button className="open-camera" onClick={captureRemotely} disabled={loading}>
           {loading ? "Capturing..." : "Capture Image"}
-        </button>
-        <button className="capture-image" onClick={downloadImage} disabled={!imageSrc}>
-          Download Image
         </button>
       </div>
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./SubmitDataDetection.scss";
 
-const SubmitDetection = () => {
+const SubmitDataDetection = () => {
   const [form, setForm] = useState({
     province: "",
     city: "",
@@ -11,7 +11,6 @@ const SubmitDetection = () => {
     imageCode: "",
     image: null,
   });
-
   const [provinces, setProvinces] = useState([]);
   const [cities, setCities] = useState([]);
   const [barangays, setBarangays] = useState([]);
@@ -22,6 +21,26 @@ const SubmitDetection = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
+    // Pre-fill date, time, and image if coming from CapturedImage
+    const capturedImageUrl = localStorage.getItem("captured_image_url");
+    const capturedDate = localStorage.getItem("captured_date");
+    const capturedTime = localStorage.getItem("captured_time");
+
+    if (capturedImageUrl && capturedDate && capturedTime) {
+      setForm((prev) => ({
+        ...prev,
+        date: capturedDate,
+        time: capturedTime,
+        image: capturedImageUrl,
+      }));
+      setImagePreview(capturedImageUrl);
+
+      // Clear the saved data after use
+      localStorage.removeItem("captured_image_url");
+      localStorage.removeItem("captured_date");
+      localStorage.removeItem("captured_time");
+    }
+
     fetch("https://psgc.cloud/api/provinces")
       .then((res) => res.json())
       .then((data) => setProvinces(data));
@@ -95,7 +114,7 @@ const SubmitDetection = () => {
       const imageUpload = new FormData();
       imageUpload.append("file", form.image);
 
-      const uploadRes = await fetch(`${process.env.REACT_APP_API_BASE}/uplaodImage.php`, {
+      const uploadRes = await fetch(`${process.env.REACT_APP_API_BASE}/uploadImage.php`, {
         method: "POST",
         body: imageUpload,
       });
@@ -199,4 +218,4 @@ const SubmitDetection = () => {
   );
 };
 
-export default SubmitDetection;
+export default SubmitDataDetection;
