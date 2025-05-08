@@ -1,3 +1,4 @@
+
 .mainContent {
   width: 82%;
   height: 100%;
@@ -5,84 +6,86 @@
   overflow: auto;
   background: hsl(330, 12%, 97%);
 
+  
   h1.sectionTitle {
     font-size: 2rem;
     margin-bottom: 1.5rem;
-    color: green;
+    color: #154734;          
   }
+
 
   .description {
-    font-size: 16x;
+    font-size: 16px;        
     color: #6c757d;
-    margin-bottom: 20px;
+    margin-bottom: 1.25rem;
   }
 
-  .searchContainer {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-    max-width: 100%;
-    width: 100%;
-    align-items: center;
-    
-    input[type="text"] {
-      flex: 2;
-      padding: 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 1rem;
-    }
-  
+
+  .filterContainer {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+
+ 
+    input[type="text"],
+    input[type="date"],
     select {
-      flex: 1;
-      padding: 0.5rem;
+      padding: 0.6rem;
       border: 1px solid #ccc;
       border-radius: 5px;
-      font-size: 1rem;
+      font-size: 0.95rem;
+      width: 100%;
     }
-  
-    input[type="date"] {
-      flex: 1;
-      padding: 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 1rem;
-    }
-  
+
+
     button {
-      padding: 0.5rem 1rem;
+      padding: 0.6rem 1rem;
       border: none;
       border-radius: 5px;
+      font-size: 0.95rem;
       cursor: pointer;
       background-color: #28a745;
-      color: white;
-      font-size: 1rem;
-      transition: 0.3s ease-in-out;
-      flex: 1;
-  
+      color: #fff;
+      transition: background-color 0.3s ease;
+
       &:hover {
-        background-color: #ffc446;
+        background-color: #218838;
       }
     }
-  }
-  
 
-  .errorMessage {
-    color: red;
-    text-align: center;
-    margin-bottom: 1rem;
+    
+    @media screen and (max-width: 992px) {
+      grid-template-columns: 1fr 1fr;
+    }
+    @media screen and (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
   }
+
+ 
+  .errorMessage {
+    background: #f8d7da;
+    color: #842029;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    border: 1px solid #f5c2c7;
+    text-align: center;
+  }
+
 
   .reportContainer {
     display: flex;
-    flex-direction: row;
     gap: 2rem;
-    align-items: flex-start;
-    margin-bottom: 2rem;
-    background: white;
+    background: #fff;
     padding: 1.5rem;
     border-radius: 10px;
+    margin-bottom: 2rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 
     @media screen and (max-width: 768px) {
@@ -90,22 +93,8 @@
     }
   }
 
-  .imageContainer {
-    flex: 1;
-    display: flex;
-    justify-content: flex-end;
-
-    .capturedImage {
-      width: 100%;
-      max-width: 350px;
-      height: auto;
-      border-radius: 8px;
-      object-fit: cover;
-    }
-  }
-
   .infoContainer {
-    flex: 1.5;
+    flex: 1.4;
     display: flex;
     flex-direction: column;
   }
@@ -116,21 +105,22 @@
     border-radius: 8px;
 
     p {
-      font-size: 1rem;
-      color: #333;
       margin: 0.3rem 0;
+      font-size: 0.95rem;
+      color: #333;
     }
   }
 
+  
   .managementTips {
-    background: #e6f7e6;
-    padding: 1.5rem;
+    background: #e6f8e6;
+    padding: 1.25rem;
     border-radius: 8px;
-    margin-top: 1.5rem;
+    margin-top: 1.25rem;
 
     h3 {
+      margin-bottom: 0.75rem;
       color: #154734;
-      margin-bottom: 1rem;
     }
 
     ul {
@@ -138,12 +128,26 @@
       padding: 0;
 
       li {
-        background: white;
-        padding: 0.75rem;
-        margin-bottom: 0.5rem;
+        background: #fff;
+        padding: 0.7rem;
         border-radius: 5px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 0.5rem;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
       }
+    }
+  }
+
+ 
+  .imageContainer {
+    flex: 0.8;
+    display: flex;
+    justify-content: flex-end;
+
+    .capturedImage {
+      max-width: 350px;
+      width: 100%;
+      border-radius: 8px;
+      object-fit: cover;
     }
   }
 }
