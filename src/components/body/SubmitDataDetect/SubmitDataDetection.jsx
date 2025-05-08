@@ -35,6 +35,9 @@ const SubmitDataDetection = () => {
       }));
       setImagePreview(capturedImageUrl);
 
+      // Run prediction for the captured image
+      handlePrediction(capturedImageUrl);
+
       // Clear the saved data after use
       localStorage.removeItem("captured_image_url");
       localStorage.removeItem("captured_date");
@@ -74,10 +77,16 @@ const SubmitDataDetection = () => {
     }
   };
 
-  const handlePrediction = async (imageFile) => {
+  const handlePrediction = async (image) => {
     try {
       const formData = new FormData();
-      formData.append("image", imageFile);
+      if (typeof image === "string") {
+        // Direct URL for captured image
+        formData.append("image_url", image);
+      } else {
+        // File for manually uploaded image
+        formData.append("image", image);
+      }
 
       const res = await fetch(`${process.env.REACT_APP_FLASK_API}/predict`, {
         method: "POST",
