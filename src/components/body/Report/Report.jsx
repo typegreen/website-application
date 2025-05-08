@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 import "./Report.scss";
 
 function Report() {
@@ -11,6 +13,7 @@ function Report() {
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
   const [healthyCount, setHealthyCount] = useState(0);
   const [diseasedCount, setDiseasedCount] = useState(0);
+  const reportRef = useRef();
 
   useEffect(() => {
     const userId = localStorage.getItem("user_id");
@@ -100,6 +103,19 @@ function Report() {
     setDiseasedCount(logs.filter((log) => log.classification.toLowerCase() === "diseased").length);
   };
 
+  const exportToPDF = async () => {
+    const element = reportRef.current;
+    const canvas = await html2canvas(element, { scale: 2 });
+    const dataUrl = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+    pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
+    pdf.save("Detection_Report.pdf");
+  };
+
   return (
     <div className="mainContent">
       <h1 className="sectionTitle">Report</h1>
@@ -143,29 +159,18 @@ function Report() {
         <button onClick={resetFilters}>Reset</button>
       </div>
 
-      {/* ✅ Print button appears after search */}
       {searchClicked && filtered.length > 0 && (
         <div className="printContainer">
-          <button className="printBtn" onClick={() => window.print()}>
-            🖨️ Print Report
+          <button className="printBtn" onClick={exportToPDF}>
+            📄 Export to PDF
           </button>
         </div>
       )}
 
-      {/* ✅ Show total counts if a search was clicked */}
-      {searchClicked && (
-        <div className="statsContainer">
-          <p><strong>Total Healthy Logs:</strong> {healthyCount}</p>
-          <p><strong>Total Diseased Logs:</strong> {diseasedCount}</p>
-        </div>
-      )}
-
-      {error && <p className="errorMessage">{error}</p>}
-
-      {filtered.map((log, index) => (
-        <div key={index} className="reportContainer">
-          <div className="infoContainer">
-            <div className="detailsSection">
+      <div ref={reportRef} className="printableReport">
+        {filtered.map((log, index) => (
+          <div key={index} className="reportContainer">
+            <div className="infoContainer">
               <p><strong>Image ID:</strong> {log.image_code}</p>
               <p><strong>User ID:</strong> {log.user_id}</p>
               <p><strong>Classification:</strong> {log.classification}</p>
@@ -173,31 +178,9 @@ function Report() {
               <p><strong>Date:</strong> {log.date_of_detection}</p>
               <p><strong>Time:</strong> {log.time_of_detection}</p>
             </div>
-
-            {/* ✅ Show tips only when user has searched and result is "diseased" */}
-            {searchClicked && log.classification.toLowerCase() === "diseased" && (
-              <div className="managementTips">
-                <h3>Disease Management Tips</h3>
-                <ul>
-                  <li><strong>Isolation:</strong> For tungro, uproot and burn infected plants. For bacterial infections, bury or cut the affected parts.</li>
-                  <li><strong>Early Detection:</strong> Monitor for symptoms within the first 2 weeks, including yellowing or stunted growth.</li>
-                  <li><strong>Vector Control:</strong> Watch for green leafhoppers which transmit tungro virus.</li>
-                  <li><strong>Pesticide Warning:</strong> Overuse of pesticides can worsen infections or weaken plant defenses.</li>
-                </ul>
-              </div>
-            )}
           </div>
-
-          <div className="imageContainer">
-            <img
-              src={log.rice_crop_image}
-              alt={`Captured ${log.image_code}`}
-              className="capturedImage"
-              loading="lazy"
-            />
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

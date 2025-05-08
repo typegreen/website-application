@@ -150,3 +150,21 @@
   color: #333;
 }
 
+.printableReport {
+  background-color: white;
+  padding: 15px;
+  border-radius: 5px;
+  margin-top: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.printBtn {
+  background-color: #2a9d8f;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
