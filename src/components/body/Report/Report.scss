@@ -10,30 +10,37 @@
   h1.sectionTitle {
     font-size: 2rem;
     margin-bottom: 1.5rem;
-    color: #154734;          
+    color: #154734;
   }
 
-
+  
   .description {
-    font-size: 16px;        
+    font-size: 16px;
     color: #6c757d;
     margin-bottom: 1.25rem;
   }
 
-
   .filterContainer {
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr 1fr auto auto;
+    gap: 1rem;
+    align-items: center;
     background: #fff;
     padding: 1.5rem;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 1rem;
     margin-bottom: 2rem;
 
- 
-    input[type="text"],
-    input[type="date"],
+   
+    input[type="text"] {
+      padding: 0.6rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 0.95rem;
+      width: 100%;
+    }
+
+   
     select {
       padding: 0.6rem;
       border: 1px solid #ccc;
@@ -42,7 +49,17 @@
       width: 100%;
     }
 
+   
+    input[type="date"] {
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 0.9rem;
+      max-width: 140px;
+      width: 100%;
+    }
 
+   
     button {
       padding: 0.6rem 1rem;
       border: none;
@@ -52,6 +69,7 @@
       background-color: #28a745;
       color: #fff;
       transition: background-color 0.3s ease;
+      white-space: nowrap;
 
       &:hover {
         background-color: #218838;
@@ -59,15 +77,12 @@
     }
 
     
-    @media screen and (max-width: 992px) {
-      grid-template-columns: 1fr 1fr;
-    }
-    @media screen and (max-width: 600px) {
-      grid-template-columns: 1fr;
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(6, 1fr);
     }
   }
 
- 
+  
   .errorMessage {
     background: #f8d7da;
     color: #842029;
@@ -78,7 +93,7 @@
     text-align: center;
   }
 
-
+  
   .reportContainer {
     display: flex;
     gap: 2rem;
@@ -93,6 +108,7 @@
     }
   }
 
+ 
   .infoContainer {
     flex: 1.4;
     display: flex;
@@ -111,7 +127,7 @@
     }
   }
 
-  
+ 
   .managementTips {
     background: #e6f8e6;
     padding: 1.25rem;
@@ -137,7 +153,6 @@
     }
   }
 
- 
   .imageContainer {
     flex: 0.8;
     display: flex;
