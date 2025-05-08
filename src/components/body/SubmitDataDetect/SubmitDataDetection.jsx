@@ -79,37 +79,36 @@ const SubmitDataDetection = () => {
 
   const handlePrediction = async (image) => {
     try {
-        const formData = new FormData();
+      const formData = new FormData();
 
-        if (typeof image === "string") {
-            // Fetch the image as a blob from the URL
-            const response = await fetch(image);
-            const blob = await response.blob();
-            const file = new File([blob], "captured_image.png", { type: blob.type });
-            formData.append("image", file);
-        } else {
-            // Use the directly uploaded file
-            formData.append("image", image);
-        }
+      if (typeof image === "string") {
+        // Fetch the image as a blob from the URL
+        const response = await fetch(image);
+        const blob = await response.blob();
+        const file = new File([blob], "captured_image.png", { type: blob.type });
+        formData.append("image", file);
+      } else {
+        // Use the directly uploaded file
+        formData.append("image", image);
+      }
 
-        const res = await fetch(`${process.env.REACT_APP_FLASK_API}/predict`, {
-            method: "POST",
-            body: formData,
-        });
+      const res = await fetch(`${process.env.REACT_APP_FLASK_API}/predict`, {
+        method: "POST",
+        body: formData,
+      });
 
-        const data = await res.json();
-        setClassification(data.class);
-        setConfidence(data.confidence);
+      const data = await res.json();
+      setClassification(data.class);
+      setConfidence(data.confidence);
     } catch (error) {
-        console.error(error);
-        setClassification("Prediction failed");
-        setConfidence(null);
+      console.error(error);
+      setClassification("Prediction failed");
+      setConfidence(null);
     }
-};
+  };
 
-
-const handleSubmit = async () => {
-  if (
+  const handleSubmit = async () => {
+    if (
       !form.province ||
       !form.city ||
       !form.barangay ||
@@ -117,56 +116,57 @@ const handleSubmit = async () => {
       !form.time ||
       !form.imageCode ||
       !form.image
-  ) {
+    ) {
       setError("All fields are required.");
       return;
-  }
+    }
 
-  setIsSubmitting(true);
-  setError(null);
+    setIsSubmitting(true);
+    setError(null);
 
-  try {
+    try {
       const imageUpload = new FormData();
 
       if (typeof form.image === "string") {
-          // Fetch the blob and convert to File
-          const response = await fetch(form.image);
-          const blob = await response.blob();
-          const fileName = "captured_image_" + Date.now() + ".png";
-          const file = new File([blob], fileName, { type: blob.type });
-          imageUpload.append("file", file);
+        // Fetch the blob and convert to File
+        const response = await fetch(form.image);
+        const blob = await response.blob();
+        const fileName = "captured_image_" + Date.now() + ".png";
+        const file = new File([blob], fileName, { type: blob.type });
+        imageUpload.append("file", file);
       } else {
-          // Use the directly uploaded file
-          imageUpload.append("file", form.image);
+        // Use the directly uploaded file
+        imageUpload.append("file", form.image);
       }
 
-      const uploadRes = await fetch(`${process.env.REACT_APP_API_BASE}/uploadImage.php`, {
-          method: "POST",
-          body: imageUpload,
+      // Corrected path to uplaodImage.php
+      const uploadRes = await fetch(`${process.env.REACT_APP_API_BASE}/uplaodImage.php`, {
+        method: "POST",
+        body: imageUpload,
       });
 
       const uploadData = await uploadRes.json();
 
       if (uploadData.error) {
-          setError(uploadData.error);
-          setIsSubmitting(false);
-          return;
+        setError(uploadData.error);
+        setIsSubmitting(false);
+        return;
       }
 
       const userId = localStorage.getItem("user_id");
 
       await fetch(`${process.env.REACT_APP_API_BASE}/insertLog.php`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-              location: `${form.province}, ${form.city}, ${form.barangay}`,
-              date: form.date,
-              time: form.time,
-              image_code: form.imageCode,
-              rice_crop_image: uploadData.url,
-              classification,
-              user_id: userId,
-          }),
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          location: `${form.province}, ${form.city}, ${form.barangay}`,
+          date: form.date,
+          time: form.time,
+          image_code: form.imageCode,
+          rice_crop_image: uploadData.url,
+          classification,
+          user_id: userId,
+        }),
       });
 
       alert("Detection submitted successfully!");
@@ -174,14 +174,13 @@ const handleSubmit = async () => {
       setClassification("");
       setConfidence(null);
       setImagePreview(null);
-  } catch (error) {
+    } catch (error) {
       console.error(error);
       setError("Something went wrong.");
-  } finally {
+    } finally {
       setIsSubmitting(false);
-  }
-};
-
+    }
+  };
 
   return (
     <div className="mainContent">
