@@ -79,28 +79,34 @@ const SubmitDataDetection = () => {
 
   const handlePrediction = async (image) => {
     try {
-      const formData = new FormData();
-      if (typeof image === "string") {
-        // Direct URL for captured image
-        formData.append("image_url", image);
-      } else {
-        // File for manually uploaded image
-        formData.append("image", image);
-      }
+        const formData = new FormData();
 
-      const res = await fetch(`${process.env.REACT_APP_FLASK_API}/predict`, {
-        method: "POST",
-        body: formData,
-      });
+        if (typeof image === "string") {
+            // Fetch the image as a blob from the URL
+            const response = await fetch(image);
+            const blob = await response.blob();
+            const file = new File([blob], "captured_image.png", { type: blob.type });
+            formData.append("image", file);
+        } else {
+            // Use the directly uploaded file
+            formData.append("image", image);
+        }
 
-      const data = await res.json();
-      setClassification(data.class);
-      setConfidence(data.confidence);
-    } catch {
-      setClassification("Prediction failed");
-      setConfidence(null);
+        const res = await fetch(`${process.env.REACT_APP_FLASK_API}/predict`, {
+            method: "POST",
+            body: formData,
+        });
+
+        const data = await res.json();
+        setClassification(data.class);
+        setConfidence(data.confidence);
+    } catch (error) {
+        console.error(error);
+        setClassification("Prediction failed");
+        setConfidence(null);
     }
-  };
+};
+
 
   const handleSubmit = async () => {
     if (
