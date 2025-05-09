@@ -32,10 +32,7 @@ function Report() {
     })
       .then((res) => res.json())
       .then((res) => {
-        // Ensure data is always an array
-        const data = Array.isArray(res) ? res : res.response || [];
-        
-        // Set initial logs and counts
+        const data = Array.isArray(res.response) ? res.response : res;
         setLogs(data);
         setFiltered(data);
         updateCounts(data);
