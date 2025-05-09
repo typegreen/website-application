@@ -102,9 +102,8 @@ function Report() {
 
   const exportToPDF = async () => {
     const doc = new jsPDF("p", "mm", "a4");
-    const container = document.getElementById("pdf-container");
 
-    // Add title and search info
+    // 📋 Add search details on the first page
     doc.setFontSize(16);
     doc.text("Detection Report", 105, 15, { align: "center" });
     doc.setFontSize(12);
@@ -116,13 +115,57 @@ function Report() {
     doc.text(`Total Healthy: ${healthyCount}`, 10, 60);
     doc.text(`Total Diseased: ${diseasedCount}`, 10, 70);
 
-    // Convert the HTML content to canvas
-    const canvas = await html2canvas(container, {
-      scale: 2,
-      useCORS: true,
+    // 📊 Add pie chart
+    const chartCanvas = document.createElement("canvas");
+    chartCanvas.width = 300;
+    chartCanvas.height = 300;
+    const chartCtx = chartCanvas.getContext("2d");
+
+    const colors = ["#28a745", "#dc3545"];
+    const chartData = [
+      { name: "Healthy", value: healthyCount },
+      { name: "Diseased", value: diseasedCount },
+    ];
+    let startAngle = 0;
+    const total = healthyCount + diseasedCount;
+
+    chartData.forEach((dataPoint, index) => {
+      const sliceAngle = (dataPoint.value / total) * 2 * Math.PI;
+      chartCtx.fillStyle = colors[index];
+      chartCtx.beginPath();
+      chartCtx.moveTo(150, 150);
+      chartCtx.arc(150, 150, 150, startAngle, startAngle + sliceAngle);
+      chartCtx.closePath();
+      chartCtx.fill();
+      startAngle += sliceAngle;
     });
-    const imageData = canvas.toDataURL("image/png");
-    doc.addImage(imageData, "PNG", 10, 80, 190, 150);
+
+    const chartImage = chartCanvas.toDataURL("image/png");
+    doc.addImage(chartImage, "PNG", 30, 80, 150, 150);
+
+    // 📄 Add table of filtered logs on the second page
+    doc.addPage();
+    let yOffset = 20;
+    doc.setFontSize(14);
+    doc.text("Detection Logs", 105, yOffset, { align: "center" });
+    yOffset += 10;
+    doc.setFontSize(10);
+
+    filtered.forEach((log, index) => {
+      doc.text(`Image ID: ${log.image_code}`, 10, yOffset);
+      doc.text(`User ID: ${log.user_id}`, 10, yOffset + 5);
+      doc.text(`Classification: ${log.classification}`, 10, yOffset + 10);
+      doc.text(`Location: ${log.location}`, 10, yOffset + 15);
+      doc.text(`Date: ${log.date_of_detection}`, 10, yOffset + 20);
+      doc.text(`Time: ${log.time_of_detection}`, 10, yOffset + 25);
+      yOffset += 35;
+
+      // Add new page if too long
+      if (yOffset > 270) {
+        doc.addPage();
+        yOffset = 20;
+      }
+    });
 
     // Save the PDF
     doc.save("Detection_Report.pdf");
@@ -178,40 +221,6 @@ function Report() {
       </div>
 
       {error && <p className="errorMessage">{error}</p>}
-
-      <div id="pdf-container">
-        {filtered.map((log, index) => (
-          <div key={index} className="reportContainer">
-            <div className="infoContainer">
-              <img
-                src={log.rice_crop_image}
-                alt={`Captured ${log.image_code}`}
-                className="capturedImage"
-                loading="lazy"
-                style={{ maxWidth: "150px", marginBottom: "10px" }}
-              />
-              <p><strong>Image ID:</strong> {log.image_code}</p>
-              <p><strong>User ID:</strong> {log.user_id}</p>
-              <p><strong>Classification:</strong> {log.classification}</p>
-              <p><strong>Location:</strong> {log.location}</p>
-              <p><strong>Date:</strong> {log.date_of_detection}</p>
-              <p><strong>Time:</strong> {log.time_of_detection}</p>
-
-              {searchClicked && log.classification.toLowerCase() === "diseased" && (
-                <div className="managementTips">
-                  <h3>Disease Management Tips</h3>
-                  <ul>
-                    <li>Isolate infected plants immediately.</li>
-                    <li>Use appropriate pesticides.</li>
-                    <li>Monitor closely for further symptoms.</li>
-                    <li>Maintain proper field hygiene.</li>
-                  </ul>
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }
