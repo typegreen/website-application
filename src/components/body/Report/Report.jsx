@@ -32,10 +32,17 @@ function Report() {
     })
       .then((res) => res.json())
       .then((res) => {
-        const data = Array.isArray(res.response) ? res.response : res;
+        // Ensure data is always an array
+        const data = Array.isArray(res) ? res : res.response || [];
+        
+        // Set initial logs and counts
         setLogs(data);
         setFiltered(data);
         updateCounts(data);
+
+        // ✅ Debug Check - Initial Logs
+        console.log("Initial Logs Loaded:", data);
+        console.log("Initial Filtered Logs:", data);
       })
       .catch((error) => {
         console.error("Error loading logs:", error);
@@ -44,8 +51,14 @@ function Report() {
   }, []);
 
   const updateCounts = (data) => {
-    setHealthyCount(data.filter((log) => log.classification.toLowerCase() === "healthy").length);
-    setDiseasedCount(data.filter((log) => log.classification.toLowerCase() === "diseased").length);
+    const healthyLogs = data.filter((log) => log.classification.toLowerCase() === "healthy");
+    const diseasedLogs = data.filter((log) => log.classification.toLowerCase() === "diseased");
+    setHealthyCount(healthyLogs.length);
+    setDiseasedCount(diseasedLogs.length);
+
+    // ✅ Debug Check - Updated Counts
+    console.log("Updated Healthy Count:", healthyLogs.length);
+    console.log("Updated Diseased Count:", diseasedLogs.length);
   };
 
   const handleSearch = () => {
@@ -84,6 +97,9 @@ function Report() {
     setFiltered(results);
     updateCounts(results);
 
+    // ✅ Debug Check - Filtered Logs
+    console.log("Filtered Logs After Search:", results);
+
     if (results.length === 0) {
       setError("No match found.");
     } else {
@@ -99,6 +115,9 @@ function Report() {
     setError("");
     setSearchClicked(false);
     updateCounts(logs);
+
+    // ✅ Debug Check - Logs After Reset
+    console.log("Logs After Reset:", logs);
   };
 
   const exportToPDF = async () => {
@@ -176,52 +195,3 @@ function Report() {
       <p className="description">
         Search and view submitted rice crop detection records. Use the filters to refine your search.
       </p>
-
-      <div className="filterContainer">
-        <input
-          type="text"
-          placeholder="Enter Image Code or User ID"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-
-        <select
-          value={classificationFilter}
-          onChange={(e) => setClassificationFilter(e.target.value)}
-        >
-          <option value="all">All Classifications</option>
-          <option value="healthy">Healthy</option>
-          <option value="diseased">Diseased</option>
-        </select>
-
-        <input
-          type="date"
-          value={dateRange.start}
-          onChange={(e) =>
-            setDateRange((prev) => ({ ...prev, start: e.target.value }))
-          }
-        />
-        <input
-          type="date"
-          value={dateRange.end}
-          onChange={(e) =>
-            setDateRange((prev) => ({ ...prev, end: e.target.value }))
-          }
-        />
-
-        <button onClick={handleSearch}>Search</button>
-        <button onClick={resetFilters}>Reset</button>
-
-        {searchClicked && filtered.length > 0 && (
-          <button className="printBtn" onClick={exportToPDF}>
-            📄 Export to PDF
-          </button>
-        )}
-      </div>
-
-      {error && <p className="errorMessage">{error}</p>}
-    </div>
-  );
-}
-
-export default Report;
