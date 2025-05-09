@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from "recharts";
 import "./Report.scss";
 
 function Report() {
@@ -35,16 +34,18 @@ function Report() {
         const data = Array.isArray(res) ? res : res.response || [];
         setLogs(data);
         setFiltered(data);
-
-        // Set initial counts
-        setHealthyCount(data.filter((log) => log.classification.toLowerCase() === "healthy").length);
-        setDiseasedCount(data.filter((log) => log.classification.toLowerCase() === "diseased").length);
+        updateCounts(data);
       })
       .catch((error) => {
         console.error("Error loading logs:", error);
         setError("Failed to load logs. Please try again later.");
       });
   }, []);
+
+  const updateCounts = (data) => {
+    setHealthyCount(data.filter((log) => log.classification.toLowerCase() === "healthy").length);
+    setDiseasedCount(data.filter((log) => log.classification.toLowerCase() === "diseased").length);
+  };
 
   const handleSearch = () => {
     setSearchClicked(true);
@@ -89,11 +90,6 @@ function Report() {
     }
   };
 
-  const updateCounts = (data) => {
-    setHealthyCount(data.filter((log) => log.classification.toLowerCase() === "healthy").length);
-    setDiseasedCount(data.filter((log) => log.classification.toLowerCase() === "diseased").length);
-  };
-
   const resetFilters = () => {
     setSearchTerm("");
     setClassificationFilter("all");
@@ -105,44 +101,31 @@ function Report() {
   };
 
   const exportToPDF = async () => {
-    const reportContent = document.getElementById("pdf-container");
+    const doc = new jsPDF("p", "mm", "a4");
+    const container = document.getElementById("pdf-container");
 
-    // Generate PDF from the visible report content
-    const canvas = await html2canvas(reportContent);
-    const imageData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF("p", "mm", "a4");
+    // Add title and search info
+    doc.setFontSize(16);
+    doc.text("Detection Report", 105, 15, { align: "center" });
+    doc.setFontSize(12);
+    doc.text(`Search Term: ${searchTerm || "All"}`, 10, 30);
+    doc.text(`Classification Filter: ${classificationFilter}`, 10, 40);
+    if (dateRange.start && dateRange.end) {
+      doc.text(`Date Range: ${dateRange.start} to ${dateRange.end}`, 10, 50);
+    }
+    doc.text(`Total Healthy: ${healthyCount}`, 10, 60);
+    doc.text(`Total Diseased: ${diseasedCount}`, 10, 70);
 
-    pdf.addImage(imageData, "PNG", 10, 10, 190, 0);
-
-    // Add Pie Chart
-    const chartData = [
-      { name: "Healthy", value: healthyCount },
-      { name: "Diseased", value: diseasedCount },
-    ];
-    const chartCanvas = document.createElement("canvas");
-    chartCanvas.width = 300;
-    chartCanvas.height = 300;
-    const chartCtx = chartCanvas.getContext("2d");
-
-    const colors = ["#28a745", "#dc3545"];
-    let startAngle = 0;
-
-    chartData.forEach((dataPoint, index) => {
-      const sliceAngle = (dataPoint.value / (healthyCount + diseasedCount)) * 2 * Math.PI;
-      chartCtx.fillStyle = colors[index];
-      chartCtx.beginPath();
-      chartCtx.moveTo(150, 150);
-      chartCtx.arc(150, 150, 150, startAngle, startAngle + sliceAngle);
-      chartCtx.closePath();
-      chartCtx.fill();
-      startAngle += sliceAngle;
+    // Convert the HTML content to canvas
+    const canvas = await html2canvas(container, {
+      scale: 2,
+      useCORS: true,
     });
-
-    const chartImage = chartCanvas.toDataURL("image/png");
-    pdf.addImage(chartImage, "PNG", 10, 160, 190, 100);
+    const imageData = canvas.toDataURL("image/png");
+    doc.addImage(imageData, "PNG", 10, 80, 190, 150);
 
     // Save the PDF
-    pdf.save("Detection_Report.pdf");
+    doc.save("Detection_Report.pdf");
   };
 
   return (
@@ -205,6 +188,7 @@ function Report() {
                 alt={`Captured ${log.image_code}`}
                 className="capturedImage"
                 loading="lazy"
+                style={{ maxWidth: "150px", marginBottom: "10px" }}
               />
               <p><strong>Image ID:</strong> {log.image_code}</p>
               <p><strong>User ID:</strong> {log.user_id}</p>
@@ -212,6 +196,18 @@ function Report() {
               <p><strong>Location:</strong> {log.location}</p>
               <p><strong>Date:</strong> {log.date_of_detection}</p>
               <p><strong>Time:</strong> {log.time_of_detection}</p>
+
+              {searchClicked && log.classification.toLowerCase() === "diseased" && (
+                <div className="managementTips">
+                  <h3>Disease Management Tips</h3>
+                  <ul>
+                    <li>Isolate infected plants immediately.</li>
+                    <li>Use appropriate pesticides.</li>
+                    <li>Monitor closely for further symptoms.</li>
+                    <li>Maintain proper field hygiene.</li>
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         ))}
