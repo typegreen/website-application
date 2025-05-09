@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import "./Report.scss";
 
 function Report() {
@@ -44,20 +43,15 @@ function Report() {
   }, []);
 
   const updateCounts = (data) => {
-    setHealthyCount(
-      data.filter((log) => log.classification.toLowerCase() === "healthy")
-        .length
-    );
-    setDiseasedCount(
-      data.filter((log) => log.classification.toLowerCase() === "diseased")
-        .length
-    );
+    setHealthyCount(data.filter((log) => log.classification.toLowerCase() === "healthy").length);
+    setDiseasedCount(data.filter((log) => log.classification.toLowerCase() === "diseased").length);
   };
 
   const handleSearch = () => {
     setSearchClicked(true);
     let results = logs;
 
+    // Filter by search term
     if (searchTerm) {
       results = results.filter(
         (log) =>
@@ -67,12 +61,14 @@ function Report() {
       );
     }
 
+    // Filter by classification
     if (classificationFilter !== "all") {
       results = results.filter(
         (log) => log.classification.toLowerCase() === classificationFilter
       );
     }
 
+    // Filter by date range
     if (dateRange.start && dateRange.end) {
       results = results.filter((log) => {
         const logDate = new Date(log.date_of_detection);
@@ -110,11 +106,7 @@ function Report() {
     doc.text(`Search Term: ${searchTerm || "All"}`, 10, 30);
     doc.text(`Classification Filter: ${classificationFilter}`, 10, 40);
     if (dateRange.start && dateRange.end) {
-      doc.text(
-        `Date Range: ${dateRange.start} to ${dateRange.end}`,
-        10,
-        50
-      );
+      doc.text(`Date Range: ${dateRange.start} to ${dateRange.end}`, 10, 50);
     }
     doc.text(`Total Healthy: ${healthyCount}`, 10, 60);
     doc.text(`Total Diseased: ${diseasedCount}`, 10, 70);
@@ -135,13 +127,7 @@ function Report() {
       chartCtx.fillStyle = slice.color;
       chartCtx.beginPath();
       chartCtx.moveTo(150, 150);
-      chartCtx.arc(
-        150,
-        150,
-        150,
-        startAngle,
-        startAngle + sliceAngle
-      );
+      chartCtx.arc(150, 150, 150, startAngle, startAngle + sliceAngle);
       chartCtx.closePath();
       chartCtx.fill();
       startAngle += sliceAngle;
@@ -177,8 +163,7 @@ function Report() {
     <div className="mainContent">
       <h1 className="sectionTitle">Report</h1>
       <p className="description">
-        Search and view submitted rice crop detection records. Use the
-        filters to refine your search.
+        Search and view submitted rice crop detection records. Use the filters to refine your search.
       </p>
 
       <div className="filterContainer">
@@ -199,16 +184,12 @@ function Report() {
         <input
           type="date"
           value={dateRange.start}
-          onChange={(e) =>
-            setDateRange((p) => ({ ...p, start: e.target.value }))
-          }
+          onChange={(e) => setDateRange((p) => ({ ...p, start: e.target.value }))}
         />
         <input
           type="date"
           value={dateRange.end}
-          onChange={(e) =>
-            setDateRange((p) => ({ ...p, end: e.target.value }))
-          }
+          onChange={(e) => setDateRange((p) => ({ ...p, end: e.target.value }))}
         />
         <button onClick={handleSearch}>Search</button>
         <button onClick={resetFilters}>Reset</button>
@@ -221,36 +202,20 @@ function Report() {
 
       {error && <p className="errorMessage">{error}</p>}
 
-      {/* NEW: render the filtered logs */}
       <div className="logList">
-        {filtered.length > 0 ? (
-          <table>
-            <thead>
-              <tr>
-                <th>Image Code</th>
-                <th>User ID</th>
-                <th>Classification</th>
-                <th>Location</th>
-                <th>Date</th>
-                <th>Time</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((log) => (
-                <tr key={log.image_code}>
-                  <td>{log.image_code}</td>
-                  <td>{log.user_id}</td>
-                  <td>{log.classification}</td>
-                  <td>{log.location}</td>
-                  <td>{log.date_of_detection}</td>
-                  <td>{log.time_of_detection}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          searchClicked && <p>No records to display.</p>
-        )}
+        {filtered.map((log) => (
+          <div key={log.image_code} className="logCard">
+            <img src={log.rice_crop_image} alt={log.image_code} className="logImage" />
+            <div className="logDetails">
+              <p><strong>Image ID:</strong> {log.image_code}</p>
+              <p><strong>User ID:</strong> {log.user_id}</p>
+              <p><strong>Classification:</strong> {log.classification}</p>
+              <p><strong>Location:</strong> {log.location}</p>
+              <p><strong>Date:</strong> {log.date_of_detection}</p>
+              <p><strong>Time:</strong> {log.time_of_detection}</p>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
