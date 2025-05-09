@@ -34,16 +34,18 @@ function Report() {
         const data = Array.isArray(res) ? res : res.response || [];
         setLogs(data);
         setFiltered(data);
-
-        // Set initial counts
-        setHealthyCount(data.filter((log) => log.classification.toLowerCase() === "healthy").length);
-        setDiseasedCount(data.filter((log) => log.classification.toLowerCase() === "diseased").length);
+        updateCounts(data);
       })
       .catch((error) => {
         console.error("Error loading logs:", error);
         setError("Failed to load logs. Please try again later.");
       });
   }, []);
+
+  const updateCounts = (data) => {
+    setHealthyCount(data.filter((log) => log.classification.toLowerCase() === "healthy").length);
+    setDiseasedCount(data.filter((log) => log.classification.toLowerCase() === "diseased").length);
+  };
 
   const handleSearch = () => {
     setSearchClicked(true);
@@ -88,11 +90,6 @@ function Report() {
     }
   };
 
-  const updateCounts = (data) => {
-    setHealthyCount(data.filter((log) => log.classification.toLowerCase() === "healthy").length);
-    setDiseasedCount(data.filter((log) => log.classification.toLowerCase() === "diseased").length);
-  };
-
   const resetFilters = () => {
     setSearchTerm("");
     setClassificationFilter("all");
@@ -118,21 +115,23 @@ function Report() {
     doc.text(`Total Healthy: ${healthyCount}`, 10, 60);
     doc.text(`Total Diseased: ${diseasedCount}`, 10, 70);
 
-    // 📊 Add a pie chart
-    const totalLogs = healthyCount + diseasedCount;
-    const chartData = [
-      { label: "Healthy", value: healthyCount, color: "#28a745" },
-      { label: "Diseased", value: diseasedCount, color: "#dc3545" },
-    ];
+    // 📊 Add pie chart
     const chartCanvas = document.createElement("canvas");
     chartCanvas.width = 300;
     chartCanvas.height = 300;
     const chartCtx = chartCanvas.getContext("2d");
 
+    const colors = ["#28a745", "#dc3545"];
+    const chartData = [
+      { name: "Healthy", value: healthyCount },
+      { name: "Diseased", value: diseasedCount },
+    ];
     let startAngle = 0;
-    chartData.forEach((slice) => {
-      const sliceAngle = (slice.value / totalLogs) * 2 * Math.PI;
-      chartCtx.fillStyle = slice.color;
+    const total = healthyCount + diseasedCount;
+
+    chartData.forEach((dataPoint, index) => {
+      const sliceAngle = (dataPoint.value / total) * 2 * Math.PI;
+      chartCtx.fillStyle = colors[index];
       chartCtx.beginPath();
       chartCtx.moveTo(150, 150);
       chartCtx.arc(150, 150, 150, startAngle, startAngle + sliceAngle);
@@ -152,7 +151,7 @@ function Report() {
     yOffset += 10;
     doc.setFontSize(10);
 
-    filtered.forEach((log) => {
+    filtered.forEach((log, index) => {
       doc.text(`Image ID: ${log.image_code}`, 10, yOffset);
       doc.text(`User ID: ${log.user_id}`, 10, yOffset + 5);
       doc.text(`Classification: ${log.classification}`, 10, yOffset + 10);
