@@ -32,17 +32,10 @@ function Report() {
     })
       .then((res) => res.json())
       .then((res) => {
-        // Ensure data is always an array
         const data = Array.isArray(res) ? res : res.response || [];
-        
-        // Set initial logs and counts
         setLogs(data);
         setFiltered(data);
         updateCounts(data);
-
-        // ✅ Debug Check - Initial Logs
-        console.log("Initial Logs Loaded:", data);
-        console.log("Initial Filtered Logs:", data);
       })
       .catch((error) => {
         console.error("Error loading logs:", error);
@@ -51,22 +44,20 @@ function Report() {
   }, []);
 
   const updateCounts = (data) => {
-    const healthyLogs = data.filter((log) => log.classification.toLowerCase() === "healthy");
-    const diseasedLogs = data.filter((log) => log.classification.toLowerCase() === "diseased");
-    setHealthyCount(healthyLogs.length);
-    setDiseasedCount(diseasedLogs.length);
-
-    // ✅ Debug Check - Updated Counts
-    console.log("Updated Healthy Count:", healthyLogs.length);
-    console.log("Updated Diseased Count:", diseasedLogs.length);
+    setHealthyCount(
+      data.filter((log) => log.classification.toLowerCase() === "healthy")
+        .length
+    );
+    setDiseasedCount(
+      data.filter((log) => log.classification.toLowerCase() === "diseased")
+        .length
+    );
   };
 
   const handleSearch = () => {
     setSearchClicked(true);
-
     let results = logs;
 
-    // Filter by search term
     if (searchTerm) {
       results = results.filter(
         (log) =>
@@ -76,14 +67,12 @@ function Report() {
       );
     }
 
-    // Filter by classification
     if (classificationFilter !== "all") {
       results = results.filter(
         (log) => log.classification.toLowerCase() === classificationFilter
       );
     }
 
-    // Filter by date range
     if (dateRange.start && dateRange.end) {
       results = results.filter((log) => {
         const logDate = new Date(log.date_of_detection);
@@ -93,12 +82,8 @@ function Report() {
       });
     }
 
-    // Update filtered logs and counts
     setFiltered(results);
     updateCounts(results);
-
-    // ✅ Debug Check - Filtered Logs
-    console.log("Filtered Logs After Search:", results);
 
     if (results.length === 0) {
       setError("No match found.");
@@ -115,27 +100,26 @@ function Report() {
     setError("");
     setSearchClicked(false);
     updateCounts(logs);
-
-    // ✅ Debug Check - Logs After Reset
-    console.log("Logs After Reset:", logs);
   };
 
   const exportToPDF = async () => {
     const doc = new jsPDF("p", "mm", "a4");
-
-    // Add search details on the first page
     doc.setFontSize(16);
     doc.text("Detection Report", 105, 15, { align: "center" });
     doc.setFontSize(12);
     doc.text(`Search Term: ${searchTerm || "All"}`, 10, 30);
     doc.text(`Classification Filter: ${classificationFilter}`, 10, 40);
     if (dateRange.start && dateRange.end) {
-      doc.text(`Date Range: ${dateRange.start} to ${dateRange.end}`, 10, 50);
+      doc.text(
+        `Date Range: ${dateRange.start} to ${dateRange.end}`,
+        10,
+        50
+      );
     }
     doc.text(`Total Healthy: ${healthyCount}`, 10, 60);
     doc.text(`Total Diseased: ${diseasedCount}`, 10, 70);
 
-    // Add a pie chart
+    // Pie chart
     const chartCanvas = document.createElement("canvas");
     chartCanvas.width = 300;
     chartCanvas.height = 300;
@@ -146,29 +130,32 @@ function Report() {
     ];
     let startAngle = 0;
     const total = healthyCount + diseasedCount;
-
     chartData.forEach((slice) => {
       const sliceAngle = (slice.value / total) * 2 * Math.PI;
       chartCtx.fillStyle = slice.color;
       chartCtx.beginPath();
       chartCtx.moveTo(150, 150);
-      chartCtx.arc(150, 150, 150, startAngle, startAngle + sliceAngle);
+      chartCtx.arc(
+        150,
+        150,
+        150,
+        startAngle,
+        startAngle + sliceAngle
+      );
       chartCtx.closePath();
       chartCtx.fill();
       startAngle += sliceAngle;
     });
-
     const chartImage = chartCanvas.toDataURL("image/png");
     doc.addImage(chartImage, "PNG", 30, 80, 150, 150);
 
-    // Add table of filtered logs on the second page
+    // Logs table on page 2+
     doc.addPage();
     let yOffset = 20;
     doc.setFontSize(14);
     doc.text("Detection Logs", 105, yOffset, { align: "center" });
     yOffset += 10;
     doc.setFontSize(10);
-
     filtered.forEach((log) => {
       doc.text(`Image ID: ${log.image_code}`, 10, yOffset);
       doc.text(`User ID: ${log.user_id}`, 10, yOffset + 5);
@@ -177,15 +164,12 @@ function Report() {
       doc.text(`Date: ${log.date_of_detection}`, 10, yOffset + 20);
       doc.text(`Time: ${log.time_of_detection}`, 10, yOffset + 25);
       yOffset += 35;
-
-      // Add new page if too long
       if (yOffset > 270) {
         doc.addPage();
         yOffset = 20;
       }
     });
 
-    // Save the PDF
     doc.save("Detection_Report.pdf");
   };
 
@@ -193,5 +177,83 @@ function Report() {
     <div className="mainContent">
       <h1 className="sectionTitle">Report</h1>
       <p className="description">
-        Search and view submitted rice crop detection records. Use the filters to refine your search.
+        Search and view submitted rice crop detection records. Use the
+        filters to refine your search.
       </p>
+
+      <div className="filterContainer">
+        <input
+          type="text"
+          placeholder="Enter Image Code or User ID"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <select
+          value={classificationFilter}
+          onChange={(e) => setClassificationFilter(e.target.value)}
+        >
+          <option value="all">All Classifications</option>
+          <option value="healthy">Healthy</option>
+          <option value="diseased">Diseased</option>
+        </select>
+        <input
+          type="date"
+          value={dateRange.start}
+          onChange={(e) =>
+            setDateRange((p) => ({ ...p, start: e.target.value }))
+          }
+        />
+        <input
+          type="date"
+          value={dateRange.end}
+          onChange={(e) =>
+            setDateRange((p) => ({ ...p, end: e.target.value }))
+          }
+        />
+        <button onClick={handleSearch}>Search</button>
+        <button onClick={resetFilters}>Reset</button>
+        {searchClicked && filtered.length > 0 && (
+          <button className="printBtn" onClick={exportToPDF}>
+            📄 Export to PDF
+          </button>
+        )}
+      </div>
+
+      {error && <p className="errorMessage">{error}</p>}
+
+      {/* NEW: render the filtered logs */}
+      <div className="logList">
+        {filtered.length > 0 ? (
+          <table>
+            <thead>
+              <tr>
+                <th>Image Code</th>
+                <th>User ID</th>
+                <th>Classification</th>
+                <th>Location</th>
+                <th>Date</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((log) => (
+                <tr key={log.image_code}>
+                  <td>{log.image_code}</td>
+                  <td>{log.user_id}</td>
+                  <td>{log.classification}</td>
+                  <td>{log.location}</td>
+                  <td>{log.date_of_detection}</td>
+                  <td>{log.time_of_detection}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          searchClicked && <p>No records to display.</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default Report;
