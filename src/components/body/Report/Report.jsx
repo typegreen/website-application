@@ -25,13 +25,17 @@ function Report() {
 
     fetch(endpoint, {
       headers: {
+        "Content-Type": "application/json",
         apikey: process.env.REACT_APP_SUPABASE_API_KEY,
         Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_API_KEY}`,
       },
     })
       .then((res) => res.json())
       .then((res) => {
+        // Ensure data is always an array
         const data = Array.isArray(res) ? res : res.response || [];
+        
+        // Set initial logs and counts
         setLogs(data);
         setFiltered(data);
         updateCounts(data);
@@ -103,7 +107,7 @@ function Report() {
   const exportToPDF = async () => {
     const doc = new jsPDF("p", "mm", "a4");
 
-    // 📋 Add search details on the first page
+    // Add search details on the first page
     doc.setFontSize(16);
     doc.text("Detection Report", 105, 15, { align: "center" });
     doc.setFontSize(12);
@@ -115,23 +119,21 @@ function Report() {
     doc.text(`Total Healthy: ${healthyCount}`, 10, 60);
     doc.text(`Total Diseased: ${diseasedCount}`, 10, 70);
 
-    // 📊 Add pie chart
+    // Add a pie chart
     const chartCanvas = document.createElement("canvas");
     chartCanvas.width = 300;
     chartCanvas.height = 300;
     const chartCtx = chartCanvas.getContext("2d");
-
-    const colors = ["#28a745", "#dc3545"];
     const chartData = [
-      { name: "Healthy", value: healthyCount },
-      { name: "Diseased", value: diseasedCount },
+      { label: "Healthy", value: healthyCount, color: "#28a745" },
+      { label: "Diseased", value: diseasedCount, color: "#dc3545" },
     ];
     let startAngle = 0;
     const total = healthyCount + diseasedCount;
 
-    chartData.forEach((dataPoint, index) => {
-      const sliceAngle = (dataPoint.value / total) * 2 * Math.PI;
-      chartCtx.fillStyle = colors[index];
+    chartData.forEach((slice) => {
+      const sliceAngle = (slice.value / total) * 2 * Math.PI;
+      chartCtx.fillStyle = slice.color;
       chartCtx.beginPath();
       chartCtx.moveTo(150, 150);
       chartCtx.arc(150, 150, 150, startAngle, startAngle + sliceAngle);
@@ -143,7 +145,7 @@ function Report() {
     const chartImage = chartCanvas.toDataURL("image/png");
     doc.addImage(chartImage, "PNG", 30, 80, 150, 150);
 
-    // 📄 Add table of filtered logs on the second page
+    // Add table of filtered logs on the second page
     doc.addPage();
     let yOffset = 20;
     doc.setFontSize(14);
@@ -151,7 +153,7 @@ function Report() {
     yOffset += 10;
     doc.setFontSize(10);
 
-    filtered.forEach((log, index) => {
+    filtered.forEach((log) => {
       doc.text(`Image ID: ${log.image_code}`, 10, yOffset);
       doc.text(`User ID: ${log.user_id}`, 10, yOffset + 5);
       doc.text(`Classification: ${log.classification}`, 10, yOffset + 10);
