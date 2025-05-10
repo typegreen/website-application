@@ -219,20 +219,23 @@ function Report() {
 
       {error && <p className="errorMessage">{error}</p>}
 
-      {/* Display filtered logs as cards */}
+            {/* Display filtered logs as cards */}
       <div className="logList">
         {filtered.length > 0 ? (
           filtered.map((log) => (
-            <div key={log.image_code} className="logCard">
-              <div className="cardDetails">
-                <p><strong>Image ID:</strong> {log.image_code}</p>
-                <p><strong>User ID:</strong> {log.user_id}</p>
-                <p><strong>Classification:</strong> {log.classification}</p>
-                <p><strong>Location:</strong> {log.location}</p>
-                <p><strong>Date:</strong> {log.date_of_detection}</p>
-                <p><strong>Time:</strong> {log.time_of_detection}</p>
+            <div key={log.image_code} className="reportContainer">
+              {/* renamed from .cardDetails to .infoContainer */}
+              <div className="infoContainer">
+                <div className="detailsSection">
+                  <p><strong>Image ID:</strong> {log.image_code}</p>
+                  <p><strong>User ID:</strong> {log.user_id}</p>
+                  <p><strong>Classification:</strong> {log.classification}</p>
+                  <p><strong>Location:</strong> {log.location}</p>
+                  <p><strong>Date:</strong> {log.date_of_detection}</p>
+                  <p><strong>Time:</strong> {log.time_of_detection}</p>
+                </div>
 
-                {/* Display disease management tips only for "diseased" classification */}
+                {/* Disease tips */}
                 {searchClicked && log.classification.toLowerCase() === "diseased" && (
                   <div className="managementTips">
                     <h3>Disease Management Tips</h3>
@@ -246,7 +249,8 @@ function Report() {
                 )}
               </div>
 
-              <div className="cardImage">
+              {/* renamed from .cardImage to .imageContainer */}
+              <div className="imageContainer">
                 <img
                   src={log.rice_crop_image}
                   alt={`Captured ${log.image_code}`}
