@@ -219,33 +219,43 @@ function Report() {
 
       {error && <p className="errorMessage">{error}</p>}
 
-      {/* Display filtered logs */}
+      {/* Display filtered logs as cards */}
       <div className="logList">
         {filtered.length > 0 ? (
-          <table>
-            <thead>
-              <tr>
-                <th>Image Code</th>
-                <th>User ID</th>
-                <th>Classification</th>
-                <th>Location</th>
-                <th>Date</th>
-                <th>Time</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((log) => (
-                <tr key={log.image_code}>
-                  <td>{log.image_code}</td>
-                  <td>{log.user_id}</td>
-                  <td>{log.classification}</td>
-                  <td>{log.location}</td>
-                  <td>{log.date_of_detection}</td>
-                  <td>{log.time_of_detection}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          filtered.map((log) => (
+            <div key={log.image_code} className="logCard">
+              <div className="cardDetails">
+                <p><strong>Image ID:</strong> {log.image_code}</p>
+                <p><strong>User ID:</strong> {log.user_id}</p>
+                <p><strong>Classification:</strong> {log.classification}</p>
+                <p><strong>Location:</strong> {log.location}</p>
+                <p><strong>Date:</strong> {log.date_of_detection}</p>
+                <p><strong>Time:</strong> {log.time_of_detection}</p>
+
+                {/* Display disease management tips only for "diseased" classification */}
+                {searchClicked && log.classification.toLowerCase() === "diseased" && (
+                  <div className="managementTips">
+                    <h3>Disease Management Tips</h3>
+                    <ul>
+                      <li><strong>Isolation:</strong> For tungro, uproot and burn infected plants. For bacterial infections, bury or cut the affected parts.</li>
+                      <li><strong>Early Detection:</strong> Monitor for symptoms within the first 2 weeks, including yellowing or stunted growth.</li>
+                      <li><strong>Vector Control:</strong> Watch for green leafhoppers which transmit tungro virus.</li>
+                      <li><strong>Pesticide Warning:</strong> Overuse of pesticides can worsen infections or weaken plant defenses.</li>
+                    </ul>
+                  </div>
+                )}
+              </div>
+
+              <div className="cardImage">
+                <img
+                  src={log.rice_crop_image}
+                  alt={`Captured ${log.image_code}`}
+                  className="capturedImage"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          ))
         ) : (
           searchClicked && <p>No records to display.</p>
         )}
