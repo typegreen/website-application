@@ -5,14 +5,14 @@ import "./Report.scss";
 
 function Report() {
   const [logs, setLogs] = useState([]);
-  const [filtered, setFiltered] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [filtered, setFiltered] = useState([]);
+  const [error, setError] = useState("");
+  const [searchClicked, setSearchClicked] = useState(false);
   const [classificationFilter, setClassificationFilter] = useState("all");
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
   const [healthyCount, setHealthyCount] = useState(0);
   const [diseasedCount, setDiseasedCount] = useState(0);
-  const [searchClicked, setSearchClicked] = useState(false);
-  const [error, setError] = useState("");
 
   useEffect(() => {
     const userId = localStorage.getItem("user_id");
@@ -25,7 +25,6 @@ function Report() {
 
     fetch(endpoint, {
       headers: {
-        "Content-Type": "application/json",
         apikey: process.env.REACT_APP_SUPABASE_API_KEY,
         Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_API_KEY}`,
       },
@@ -36,10 +35,6 @@ function Report() {
         setLogs(data);
         setFiltered(data);
         updateCounts(data);
-      })
-      .catch((error) => {
-        console.error("Error loading logs:", error);
-        setError("Failed to load logs. Please try again later.");
       });
   }, []);
 
@@ -56,23 +51,27 @@ function Report() {
 
   const handleSearch = () => {
     setSearchClicked(true);
+
     let results = logs;
 
+    // Filter by search term
     if (searchTerm) {
       results = results.filter(
         (log) =>
-          log.user_id.toString().includes(searchTerm) ||
+          log.user_id.toString() === searchTerm ||
           (log.image_code &&
             log.image_code.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
 
+    // Filter by classification
     if (classificationFilter !== "all") {
       results = results.filter(
         (log) => log.classification.toLowerCase() === classificationFilter
       );
     }
 
+    // Filter by date range
     if (dateRange.start && dateRange.end) {
       results = results.filter((log) => {
         const logDate = new Date(log.date_of_detection);
@@ -82,13 +81,14 @@ function Report() {
       });
     }
 
-    setFiltered(results);
-    updateCounts(results);
-
+    // Handle empty results
     if (results.length === 0) {
       setError("No match found.");
+      setFiltered([]);
     } else {
       setError("");
+      setFiltered(results);
+      updateCounts(results);
     }
   };
 
@@ -99,7 +99,6 @@ function Report() {
     setFiltered(logs);
     setError("");
     setSearchClicked(false);
-    updateCounts(logs);
   };
 
   const exportToPDF = async () => {
@@ -177,8 +176,7 @@ function Report() {
     <div className="mainContent">
       <h1 className="sectionTitle">Report</h1>
       <p className="description">
-        Search and view submitted rice crop detection records. Use the
-        filters to refine your search.
+        Search and view submitted rice crop detection records. Use the filters to refine your search.
       </p>
 
       <div className="filterContainer">
@@ -200,14 +198,14 @@ function Report() {
           type="date"
           value={dateRange.start}
           onChange={(e) =>
-            setDateRange((p) => ({ ...p, start: e.target.value }))
+            setDateRange((prev) => ({ ...prev, start: e.target.value }))
           }
         />
         <input
           type="date"
           value={dateRange.end}
           onChange={(e) =>
-            setDateRange((p) => ({ ...p, end: e.target.value }))
+            setDateRange((prev) => ({ ...prev, end: e.target.value }))
           }
         />
         <button onClick={handleSearch}>Search</button>
@@ -221,7 +219,7 @@ function Report() {
 
       {error && <p className="errorMessage">{error}</p>}
 
-      {/* NEW: render the filtered logs */}
+      {/* Display filtered logs */}
       <div className="logList">
         {filtered.length > 0 ? (
           <table>
